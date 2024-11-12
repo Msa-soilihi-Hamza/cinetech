@@ -3,21 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Services\TMDBService;
-use Illuminate\Support\Collection;
-use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
+    private $tmdbService;
+
+    public function __construct(TMDBService $tmdbService)
+    {
+        $this->tmdbService = $tmdbService;
+    }
+
     public function index()
     {
-        $tmdb = new TMDBService();
-        
-        $popular = collect($tmdb->getPopularMovies())->take(4);
-        $trending = collect($tmdb->getTrendingMovies())->take(4);
+        $popular = $this->tmdbService->getPopularMovies();
+        $trending = $this->tmdbService->getTrendingMovies();
 
-        return view('dashboard', [
-            'popular' => $popular,
-            'trending' => $trending
-        ]);
+        return view('dashboard', compact('popular', 'trending'));
     }
 } 
