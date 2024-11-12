@@ -17,7 +17,9 @@ class DashboardController extends Controller
     {
         $popular = $this->tmdbService->getPopularMovies();
         $trending = $this->tmdbService->getTrendingMovies();
+        $popularTVShows = $this->tmdbService->getPopularTVShows();
+        $trendingTVShows = $this->tmdbService->getTrendingTVShows();
 
-        return view('dashboard', compact('popular', 'trending'));
+        return view('dashboard', compact('popular', 'trending', 'popularTVShows', 'trendingTVShows'));
     }
 } 

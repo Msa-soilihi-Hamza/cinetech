@@ -20,6 +20,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/search', [HomeController::class, 'search'])->name('search');
 Route::get('/movie/{id}', [HomeController::class, 'show'])->name('movies.show');
+Route::get('/tv/{id}', [HomeController::class, 'showTVShow'])->name('tv.show');
+Route::get('/tv', [HomeController::class, 'tvIndex'])->name('tv.index');
 
 // Routes protégées
 Route::middleware('auth')->group(function () {

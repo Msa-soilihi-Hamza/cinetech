@@ -14,7 +14,7 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" class="text-gray-300 hover:text-white">
                         {{ __('Films') }}
                     </x-nav-link>
-                    <x-nav-link href="#" class="text-gray-300 hover:text-white">
+                    <x-nav-link :href="route('tv.index')" :active="request()->routeIs('tv.*')" class="text-gray-300 hover:text-white">
                         {{ __('Séries') }}
                     </x-nav-link>
                     <x-nav-link href="#" class="text-gray-300 hover:text-white">

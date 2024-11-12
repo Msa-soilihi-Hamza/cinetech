@@ -29,4 +29,18 @@ class HomeController extends Controller
 
         return response()->json($results);
     }
+
+    public function showTVShow($id)
+    {
+        $tvShow = $this->tmdbService->getTVShowDetails($id);
+        return view('tv.show', compact('tvShow'));
+    }
+
+    public function tvIndex()
+    {
+        $popularTVShows = $this->tmdbService->getPopularTVShows();
+        $trendingTVShows = $this->tmdbService->getTrendingTVShows();
+
+        return view('tv.index', compact('popularTVShows', 'trendingTVShows'));
+    }
 }

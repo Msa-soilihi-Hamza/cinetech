@@ -49,4 +49,39 @@ class TMDBService
 
         return $response->json()['results'];
     }
+
+    public function getPopularTVShows()
+    {
+        $response = Http::withoutVerifying()
+            ->get("{$this->baseUrl}/tv/popular", [
+                'api_key' => $this->apiKey,
+                'language' => 'fr-FR',
+                'page' => 1
+            ]);
+
+        return $response->json()['results'];
+    }
+
+    public function getTrendingTVShows()
+    {
+        $response = Http::withoutVerifying()
+            ->get("{$this->baseUrl}/trending/tv/week", [
+                'api_key' => $this->apiKey,
+                'language' => 'fr-FR',
+            ]);
+
+        return $response->json()['results'];
+    }
+
+    public function getTVShowDetails($tvId)
+    {
+        $response = Http::withoutVerifying()
+            ->get("{$this->baseUrl}/tv/{$tvId}", [
+                'api_key' => $this->apiKey,
+                'language' => 'fr-FR',
+                'append_to_response' => 'credits,videos'
+            ]);
+
+        return $response->json();
+    }
 } 
