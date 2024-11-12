@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Services\TMDBService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 
 class HomeController extends Controller
 {
@@ -32,7 +33,24 @@ class HomeController extends Controller
 
     public function showTVShow($id)
     {
-        $tvShow = $this->tmdbService->getTVShowDetails($id);
+        $response = Http::withOptions([
+            'verify' => false
+        ])
+        ->get("https://api.themoviedb.org/3/movie/{$id}", [
+            'api_key' => env('TMDB_API_KEY'),
+            'append_to_response' => 'credits',
+            'language' => 'fr-FR'
+        ]);
+
+        if (!$response->successful()) {
+            abort(404);
+        }
+
+        $tvShow = $response->json();
+
+        // Pour déboguer et voir les données reçues
+        // dd($tvShow);
+
         return view('tv.show', compact('tvShow'));
     }
 
@@ -42,5 +60,15 @@ class HomeController extends Controller
         $trendingTVShows = $this->tmdbService->getTrendingTVShows();
 
         return view('tv.index', compact('popularTVShows', 'trendingTVShows'));
+    }
+
+    public function show($id)
+    {
+        // Logique pour afficher un film
+        $movie = Http::withToken(config('services.tmdb.token'))
+            ->get('https://api.themoviedb.org/3/movie/'.$id)
+            ->json();
+
+        return view('movies.show', compact('movie'));
     }
 }

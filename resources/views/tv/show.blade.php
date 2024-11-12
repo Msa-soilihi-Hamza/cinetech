@@ -6,9 +6,9 @@
         <div class="bg-gray-800 rounded-lg overflow-hidden">
             <!-- Image de fond -->
             <div class="relative h-96">
-                @if($tvShow['backdrop_path'])
-                    <img src="https://image.tmdb.org/t/p/original{{ $tvShow['backdrop_path'] }}" 
-                         alt="{{ $tvShow['name'] }}"
+                @if(isset($tvShow['backdrop_path']) && $tvShow['backdrop_path'])
+                    <img src="https://image.tmdb.org/t/p/original{{ $tvShow['backdrop_path'] }}"
+                         alt="{{ $tvShow['title'] ?? '' }}"
                          class="w-full h-full object-cover">
                     <div class="absolute inset-0 bg-gradient-to-t from-gray-900"></div>
                 @endif
@@ -19,32 +19,34 @@
                 <div class="flex flex-col md:flex-row gap-8">
                     <!-- Affiche -->
                     <div class="flex-shrink-0">
-                        @if($tvShow['poster_path'])
+                        @if(isset($tvShow['poster_path']) && $tvShow['poster_path'])
                             <img src="https://image.tmdb.org/t/p/w500{{ $tvShow['poster_path'] }}"
-                                 alt="{{ $tvShow['name'] }}"
+                                 alt="{{ $tvShow['title'] ?? '' }}"
                                  class="w-64 rounded-lg shadow-lg">
                         @endif
                     </div>
                     
                     <!-- Informations -->
                     <div class="text-white">
-                        <h1 class="text-4xl font-bold mb-4">{{ $tvShow['name'] }}</h1>
+                        <h1 class="text-4xl font-bold mb-4">{{ $tvShow['title'] ?? '' }}</h1>
                         
                         <!-- Métadonnées -->
                         <div class="flex items-center gap-4 mb-4">
-                            <span class="text-purple-500 font-bold">{{ number_format($tvShow['vote_average'], 1) }}/10</span>
-                            <span class="text-gray-400">{{ \Carbon\Carbon::parse($tvShow['first_air_date'])->format('d/m/Y') }}</span>
+                            <span class="text-purple-500 font-bold">{{ number_format($tvShow['vote_average'] ?? 0, 1) }}/10</span>
+                            <span class="text-gray-400">{{ isset($tvShow['release_date']) ? \Carbon\Carbon::parse($tvShow['release_date'])->format('d/m/Y') : '' }}</span>
                             <span class="text-gray-400">
-                                @foreach($tvShow['genres'] as $genre)
-                                    {{ $genre['name'] }}@if(!$loop->last), @endif
-                                @endforeach
+                                @if(isset($tvShow['genres']))
+                                    @foreach($tvShow['genres'] as $genre)
+                                        {{ $genre['name'] }}@if(!$loop->last), @endif
+                                    @endforeach
+                                @endif
                             </span>
                         </div>
                         
                         <!-- Synopsis -->
                         <div class="mb-8">
                             <h2 class="text-xl font-semibold mb-2">Synopsis</h2>
-                            <p class="text-gray-300">{{ $tvShow['overview'] }}</p>
+                            <p class="text-gray-300">{{ $tvShow['overview'] ?? 'Aucun synopsis disponible.' }}</p>
                         </div>
                         
                         <!-- Distribution -->

@@ -32,7 +32,7 @@ return [
     ],
 
     'tmdb' => [
-        'key' => env('TMDB_API_KEY'),
+        'token' => env('TMDB_TOKEN'),
     ],
 
 ];
