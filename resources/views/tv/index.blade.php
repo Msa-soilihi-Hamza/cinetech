@@ -12,9 +12,9 @@
                         @if($show['poster_path'])
                             <img src="https://image.tmdb.org/t/p/w342{{ $show['poster_path'] }}"
                                  alt="{{ $show['name'] }}"
-                                 class="w-full h-[200px] object-cover">
+                                 class="w-full h-200px object-cover">
                         @else
-                            <div class="w-full h-[200px] bg-gray-700 flex items-center justify-center">
+                            <div class="w-full h-200px bg-gray-700 flex items-center justify-center">
                                 <span class="text-gray-400">No Image</span>
                             </div>
                         @endif
@@ -43,9 +43,9 @@
                         @if($show['poster_path'])
                             <img src="https://image.tmdb.org/t/p/w342{{ $show['poster_path'] }}"
                                  alt="{{ $show['name'] }}"
-                                 class="w-full h-[200px] object-cover">
+                                 class="w-full h-200px object-cover">
                         @else
-                            <div class="w-full h-[200px] bg-gray-700 flex items-center justify-center">
+                            <div class="w-full h-200px bg-gray-700 flex items-center justify-center">
                                 <span class="text-gray-400">No Image</span>
                             </div>
                         @endif

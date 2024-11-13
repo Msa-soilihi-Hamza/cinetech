@@ -9,7 +9,7 @@
                 @if(isset($tvShow['backdrop_path']) && $tvShow['backdrop_path'])
                     <img src="https://image.tmdb.org/t/p/original{{ $tvShow['backdrop_path'] }}"
                          alt="{{ $tvShow['title'] ?? '' }}"
-                         class="w-full h-full object-cover">
+                         class="w-full h-600px bg-gray-700 flex items-center justify-center">
                     <div class="absolute inset-0 bg-gradient-to-t from-gray-900"></div>
                 @endif
             </div>
@@ -22,7 +22,7 @@
                         @if(isset($tvShow['poster_path']) && $tvShow['poster_path'])
                             <img src="https://image.tmdb.org/t/p/w500{{ $tvShow['poster_path'] }}"
                                  alt="{{ $tvShow['title'] ?? '' }}"
-                                 class="w-64 rounded-lg shadow-lg">
+                                 class="w-full h-600px bg-gray-700 flex items-center justify-center">
                         @endif
                     </div>
                     
@@ -53,16 +53,16 @@
                         @if(isset($tvShow['credits']['cast']) && count($tvShow['credits']['cast']) > 0)
                             <div>
                                 <h2 class="text-xl font-semibold mb-4">Distribution principale</h2>
-                                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
                                     @foreach(array_slice($tvShow['credits']['cast'], 0, 4) as $actor)
-                                        <div class="text-center">
+                                        <div class="text-center bg-gray-700 rounded-lg p-6 hover:bg-gray-600 transition">
                                             @if($actor['profile_path'])
-                                                <img src="https://image.tmdb.org/t/p/w185{{ $actor['profile_path'] }}"
+                                                <img src="https://image.tmdb.org/t/p/original{{ $actor['profile_path'] }}"
                                                      alt="{{ $actor['name'] }}"
-                                                     class="w-24 h-24 rounded-full mx-auto mb-2 object-cover">
+                                                     class="w-[400px] h-[400px] rounded-full mx-auto mb-4 object-cover">
                                             @endif
-                                            <p class="font-medium">{{ $actor['name'] }}</p>
-                                            <p class="text-sm text-gray-400">{{ $actor['character'] }}</p>
+                                            <p class="font-medium text-xl text-white">{{ $actor['name'] }}</p>
+                                            <p class="text-base text-gray-300">{{ $actor['character'] }}</p>
                                         </div>
                                     @endforeach
                                 </div>

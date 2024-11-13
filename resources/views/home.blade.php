@@ -11,9 +11,9 @@
                     @if($movie['poster_path'])
                         <img src="https://image.tmdb.org/t/p/w342{{ $movie['poster_path'] }}"
                              alt="{{ $movie['title'] }}"
-                             class="w-full h-[200px] object-cover">
+                             class="w-full h-100px object-cover">
                     @else
-                        <div class="w-full h-[200px] bg-gray-700 flex items-center justify-center">
+                        <div class="w-full h-100px bg-gray-700 flex items-center justify-center">
                             <span class="text-gray-400">No Image</span>
                         </div>
                     @endif
@@ -40,9 +40,9 @@
                     @if($movie['poster_path'])
                         <img src="https://image.tmdb.org/t/p/w342{{ $movie['poster_path'] }}"
                              alt="{{ $movie['title'] }}"
-                             class="w-full h-[200px] object-cover">
+                             class="w-full h-100px object-cover">
                     @else
-                        <div class="w-full h-[200px] bg-gray-700 flex items-center justify-center">
+                        <div class="w-full h-100px bg-gray-700 flex items-center justify-center">
                             <span class="text-gray-400">No Image</span>
                         </div>
                     @endif
