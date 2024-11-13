@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\MovieController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -22,6 +23,7 @@ Route::get('/search', [HomeController::class, 'search'])->name('search');
 Route::get('/movie/{id}', [HomeController::class, 'showTVShow'])->name('movies.show');
 Route::get('/tv/{id}', [HomeController::class, 'showTVShow'])->name('tv.show');
 Route::get('/tv', [HomeController::class, 'tvIndex'])->name('tv.index');
+Route::get('/films-et-series', [MovieController::class, 'allMedia'])->name('all.media');
 
 // Routes protégées
 Route::middleware('auth')->group(function () {
