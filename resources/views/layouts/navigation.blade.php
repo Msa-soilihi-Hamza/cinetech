@@ -27,8 +27,8 @@
             </div>
 
             <!-- Barre de recherche -->
-            <div class="flex-1 px-4">
-                <div class="relative">
+            <div class="flex-1 flex items-center justify-center px-4 max-w-xl mx-auto">
+                <div class="relative w-full">
                     <input type="text" 
                            id="search-input"
                            class="w-full bg-gray-800 text-white rounded-lg pl-4 pr-10 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
