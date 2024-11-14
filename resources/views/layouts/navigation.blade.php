@@ -11,15 +11,16 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
+                <x-nav-link :href="route('all.media')" :active="request()->routeIs('all.media')" class="text-gray-300 hover:text-white">
+                        {{ __('Films & Séries') }}
+                    </x-nav-link>
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" class="text-gray-300 hover:text-white">
                         {{ __('Films') }}
                     </x-nav-link>
                     <x-nav-link :href="route('tv.index')" :active="request()->routeIs('tv.*')" class="text-gray-300 hover:text-white">
                         {{ __('Séries') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('all.media')" :active="request()->routeIs('all.media')" class="text-gray-300 hover:text-white">
-                        {{ __('Films & Séries') }}
-                    </x-nav-link>
+                   
                     <x-nav-link href="#" class="text-gray-300 hover:text-white">
                         {{ __('Favoris') }}
                     </x-nav-link>
