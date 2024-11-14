@@ -29,13 +29,16 @@
             <!-- Barre de recherche -->
             <div class="flex-1 flex items-center justify-center px-4 max-w-xl mx-auto">
                 <div class="relative w-full">
-                    <input type="text" 
-                           id="search-input"
-                           class="w-full bg-gray-800 text-white rounded-lg pl-4 pr-10 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                           placeholder="Rechercher un film ou une série..."
-                           autocomplete="off">
-                    <div id="search-results" class="absolute z-50 w-full mt-1 bg-gray-800 rounded-lg shadow-lg hidden">
-                    </div>
+                    <form action="{{ route('search') }}" method="GET" id="search-form">
+                        <input type="text" 
+                               id="search-input"
+                               name="query"
+                               class="w-full bg-gray-800 text-white rounded-lg pl-4 pr-10 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                               placeholder="Rechercher un film ou une série..."
+                               autocomplete="off">
+                        <div id="search-results" class="absolute z-50 w-full mt-1 bg-gray-800 rounded-lg shadow-lg hidden">
+                        </div>
+                    </form>
                 </div>
             </div>
 
