@@ -11,8 +11,8 @@ class TMDBService
 
     public function __construct()
     {
-        $this->baseUrl = env('TMDB_BASE_URL');
-        $this->apiKey = env('TMDB_API_KEY');
+        $this->baseUrl = 'https://api.themoviedb.org/3';
+        $this->apiKey = 'dea1a14482c9d93ec460415f8ad56b1d';
     }
 
     public function getPopularMovies()
@@ -29,37 +29,70 @@ class TMDBService
 
     public function getTrendingMovies()
     {
-        $response = Http::withoutVerifying()
-            ->get("{$this->baseUrl}/trending/movie/week", [
+        try {
+            $response = Http::withOptions([
+                'verify' => false
+            ])->get("{$this->baseUrl}/trending/movie/week", [
                 'api_key' => $this->apiKey,
                 'language' => 'fr-FR',
             ]);
 
-        return $response->json()['results'];
+            if ($response->successful()) {
+                return $response->json()['results'];
+            }
+
+            return [];
+
+        } catch (\Exception $e) {
+            \Log::error('Erreur TMDB: ' . $e->getMessage());
+            return [];
+        }
     }
 
     public function searchMovies($query)
     {
-        $response = Http::get("{$this->baseUrl}/search/movie", [
-            'api_key' => $this->apiKey,
-            'language' => 'fr-FR',
-            'query' => $query,
-            'page' => 1
-        ]);
+        try {
+            $response = Http::withOptions([
+                'verify' => false
+            ])->get("{$this->baseUrl}/search/movie", [
+                'api_key' => $this->apiKey,
+                'language' => 'fr-FR',
+                'query' => $query,
+                'page' => 1
+            ]);
 
-        return $response->json()['results'];
+            if ($response->successful()) {
+                return $response->json()['results'];
+            }
+
+            return [];
+
+        } catch (\Exception $e) {
+            \Log::error('Erreur TMDB: ' . $e->getMessage());
+            return [];
+        }
     }
 
     public function getPopularTVShows()
     {
-        $response = Http::withoutVerifying()
-            ->get("{$this->baseUrl}/tv/popular", [
+        try {
+            $response = Http::withOptions([
+                'verify' => false
+            ])->get("{$this->baseUrl}/tv/popular", [
                 'api_key' => $this->apiKey,
                 'language' => 'fr-FR',
-                'page' => 1
             ]);
 
-        return $response->json()['results'];
+            if ($response->successful()) {
+                return $response->json()['results'];
+            }
+
+            return [];
+
+        } catch (\Exception $e) {
+            \Log::error('Erreur TMDB: ' . $e->getMessage());
+            return [];
+        }
     }
 
     public function getTrendingTVShows()

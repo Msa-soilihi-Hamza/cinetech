@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MovieController;
+use App\Http\Controllers\SearchController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -24,6 +25,7 @@ Route::get('/movie/{id}', [HomeController::class, 'showTVShow'])->name('movies.s
 Route::get('/tv/{id}', [HomeController::class, 'showTVShow'])->name('tv.show');
 Route::get('/tv', [HomeController::class, 'tvIndex'])->name('tv.index');
 Route::get('/films-et-series', [MovieController::class, 'allMedia'])->name('all.media');
+Route::get('/search/autocomplete', [SearchController::class, 'autocomplete'])->name('search.autocomplete');
 
 // Routes protégées
 Route::middleware('auth')->group(function () {

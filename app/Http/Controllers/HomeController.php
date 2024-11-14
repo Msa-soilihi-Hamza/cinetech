@@ -26,9 +26,17 @@ class HomeController extends Controller
     public function search(Request $request)
     {
         $query = $request->input('query');
+        
+        if (empty($query)) {
+            return redirect()->back();
+        }
+
         $results = $this->tmdbService->searchMovies($query);
 
-        return response()->json($results);
+        return view('search.results', [
+            'results' => $results,
+            'query' => $query
+        ]);
     }
 
     public function showTVShow($id)
@@ -47,9 +55,6 @@ class HomeController extends Controller
         }
 
         $tvShow = $response->json();
-
-        // Pour déboguer et voir les données reçues
-        // dd($tvShow);
 
         return view('tv.show', compact('tvShow'));
     }

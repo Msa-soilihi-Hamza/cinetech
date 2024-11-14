@@ -21,19 +21,21 @@
                         {{ __('Films & Séries') }}
                     </x-nav-link>
                     <x-nav-link href="#" class="text-gray-300 hover:text-white">
-                        {{ __('Ma Liste') }}
+                        {{ __('Favoris') }}
                     </x-nav-link>
                 </div>
             </div>
 
-            <!-- Search -->
-            <div class="flex items-center">
+            <!-- Barre de recherche -->
+            <div class="flex-1 px-4">
                 <div class="relative">
                     <input type="text" 
-                           placeholder="Rechercher..." 
-                           class="bg-gray-800 text-white px-4 py-1 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7f00ff]"
-                           disabled
-                    >
+                           id="search-input"
+                           class="w-full bg-gray-800 text-white rounded-lg pl-4 pr-10 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                           placeholder="Rechercher un film ou une série..."
+                           autocomplete="off">
+                    <div id="search-results" class="absolute z-50 w-full mt-1 bg-gray-800 rounded-lg shadow-lg hidden">
+                    </div>
                 </div>
             </div>
 
