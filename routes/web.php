@@ -29,7 +29,7 @@ Route::get('/films-et-series', [MovieController::class, 'allMedia'])->name('all.
 Route::get('/search/autocomplete', [SearchController::class, 'autocomplete'])->name('search.autocomplete');
 
 // Routes protégées
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth'])->group(function () {
     // Ajout de la route dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -38,9 +38,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::post('/favorites/add', [FavoriteController::class, 'store'])->name('favorites.add');
-    Route::delete('/favorites/remove', [FavoriteController::class, 'destroy'])->name('favorites.remove');
-    Route::get('/favorites/check/{tmdb_id}', [FavoriteController::class, 'check'])->name('favorites.check');
     Route::get('/favorites', [FavoriteController::class, 'index'])->name('favorites.index');
+    Route::delete('/favorites/remove', [FavoriteController::class, 'destroy'])->name('favorites.remove');
 });
 
 require __DIR__.'/auth.php';

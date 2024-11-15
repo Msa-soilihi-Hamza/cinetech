@@ -15,13 +15,13 @@ return new class extends Migration
     {
         Schema::create('favorites', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->integer('tmdb_id');
-            $table->string('type');
+            $table->unsignedBigInteger('tmdb_id');
+            $table->enum('type', ['movie', 'tv']);
+            $table->timestamps();
             
-            // Ajouter une contrainte unique pour empêcher les doublons
-            $table->unique(['user_id', 'tmdb_id', 'type']);
+            $table->unique(['user_id', 'tmdb_id', 'type'], 'unique_user_favorite');
+            $table->index(['user_id', 'type']);
         });
     }
 
