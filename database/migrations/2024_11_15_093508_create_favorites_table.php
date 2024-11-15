@@ -19,6 +19,9 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->integer('tmdb_id');
             $table->string('type');
+            
+            // Ajouter une contrainte unique pour empêcher les doublons
+            $table->unique(['user_id', 'tmdb_id', 'type']);
         });
     }
 

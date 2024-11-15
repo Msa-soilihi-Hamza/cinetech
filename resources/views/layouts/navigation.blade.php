@@ -21,7 +21,7 @@
                         {{ __('Séries') }}
                     </x-nav-link>
                    
-                    <x-nav-link href="#" class="text-gray-300 hover:text-white">
+                    <x-nav-link :href="route('favorites.index')" :active="request()->routeIs('favorites.index')" class="text-gray-300 hover:text-white">
                         {{ __('Favoris') }}
                     </x-nav-link>
                 </div>

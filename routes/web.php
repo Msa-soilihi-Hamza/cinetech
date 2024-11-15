@@ -40,6 +40,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/favorites/add', [FavoriteController::class, 'store'])->name('favorites.add');
     Route::delete('/favorites/remove', [FavoriteController::class, 'destroy'])->name('favorites.remove');
     Route::get('/favorites/check/{tmdb_id}', [FavoriteController::class, 'check'])->name('favorites.check');
+    Route::get('/favorites', [FavoriteController::class, 'index'])->name('favorites.index');
 });
 
 require __DIR__.'/auth.php';
