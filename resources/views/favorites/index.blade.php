@@ -52,6 +52,7 @@
                                     @csrf
                                     @method('DELETE')
                                     <input type="hidden" name="tmdb_id" value="{{ $favorite['tmdb_id'] }}">
+                                    <input type="hidden" name="type" value="{{ $favorite['type'] === 'Film' ? 'movie' : 'tv' }}">
                                     <button type="submit" 
                                             class="text-red-500 hover:text-red-700 transition-colors"
                                             title="Retirer des favoris">

@@ -27,5 +27,7 @@
             {{ session('error') }}
         </div>
     @endif
+
+    <script src="{{ asset('js/favorites.js') }}"></script>
 </body>
 </html>
