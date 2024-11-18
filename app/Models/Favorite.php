@@ -25,7 +25,7 @@ class Favorite extends Model
     }
 }
 
-
 // En resume se medele permet de definir ce que c'est les favoris  dans sur notre site 
 //s'assurrer que les donne sont de bon type 
 // et de faire le lien avec l'utilisateur qui a ajouter en favoris
+

@@ -25,6 +25,12 @@
                                     $isFavorite = Auth::user()->favorites()
                                         ->where('tmdb_id', $movie['id'])
                                         ->exists();
+                                    
+                                    // Débogage temporaire
+                                    \Log::info('Vérification favori', [
+                                        'movie_id' => $movie['id'],
+                                        'is_favorite' => $isFavorite
+                                    ]);
                                 @endphp
 
                                 @if($isFavorite)
@@ -87,6 +93,12 @@
                                     $isFavorite = Auth::user()->favorites()
                                         ->where('tmdb_id', $movie['id'])
                                         ->exists();
+                                    
+                                    // Débogage temporaire
+                                    \Log::info('Vérification favori', [
+                                        'movie_id' => $movie['id'],
+                                        'is_favorite' => $isFavorite
+                                    ]);
                                 @endphp
 
                                 @if($isFavorite)

@@ -13,6 +13,16 @@ class FavoriteController extends Controller
     public function store(Request $request)
     {
         try {
+            if (!Auth::check()) {
+                Log::warning('Tentative d\'ajout de favori sans authentification');
+                return redirect()->back()->with('error', 'Vous devez être connecté');
+            }
+
+            Log::info('Données reçues:', [
+                'request_all' => $request->all(),
+                'user_id' => Auth::id()
+            ]);
+
             $validated = $request->validate([
                 'tmdb_id' => 'required|numeric', // il verfie que l'id est un nombre
                 'type' => 'required|in:movie,tv' // il verfie que le type est soit movie ou tv
@@ -33,12 +43,22 @@ class FavoriteController extends Controller
                 'type' => $validated['type'] // il verfie que le type est soit movie ou tv
             ]);
 
+            Log::info('Favori créé avec succès:', [
+                'favorite_id' => $favorite->id,
+                'user_id' => Auth::id(),
+                'tmdb_id' => $validated['tmdb_id'],
+                'type' => $validated['type']
+            ]);
+
             return redirect()->route('favorites.index') // il redirige vers la page des favoris
                 ->with('success', 'Ajouté aux favoris avec succès'); // il affiche un message de succes
 
         } catch (\Exception $e) { // il capture les erreurs
-            Log::error('Erreur lors de l\'ajout du favori:', [ // il enregistre l'erreur dans les logs
-                'error' => $e->getMessage()
+            Log::error('Erreur détaillée lors de l\'ajout du favori:', [
+                'message' => $e->getMessage(),
+                'line' => $e->getLine(),
+                'file' => $e->getFile(),
+                'trace' => $e->getTraceAsString()
             ]);
             return redirect()->back()
                 ->with('error', 'Erreur lors de l\'ajout aux favoris');
@@ -48,26 +68,28 @@ class FavoriteController extends Controller
     public function index()
     {
         try {
-            // Récupérer les favoris de l'utilisateur
             $userFavorites = Auth::user()->favorites()->get();
             
-            // Debug: voir ce qu'on récupère
-            Log::info('Favoris bruts:', $userFavorites->toArray()); //
-
             $favorites = [];
 
-            foreach ($userFavorites as $favorite) { // il parcourt les favoris
-                // Déterminer le type de média
-                $endpoint = $favorite->type; // il recupere le type de média
+            foreach ($userFavorites as $favorite) {
+                Log::info('Tentative de requête TMDB pour:', [
+                    'endpoint' => $favorite->type,
+                    'tmdb_id' => $favorite->tmdb_id
+                ]);
                 
-                // Faire la requête à TMDB
-                $response = Http::withoutVerifying() // il fait la requete a TMDB
-                    ->get("https://api.themoviedb.org/3/{$endpoint}/{$favorite->tmdb_id}", [
-                        'api_key' => env('TMDB_API_KEY'), // il recupere la clé api de TMDB
-                        'language' => 'fr-FR', // il recupere la langue en francais
+                $response = Http::withoutVerifying()
+                    ->get("https://api.themoviedb.org/3/{$favorite->type}/{$favorite->tmdb_id}", [
+                        'api_key' => env('TMDB_API_KEY'),
+                        'language' => 'fr-FR',
                     ]);
 
-                if ($response->successful()) { // il verifie si la requete est reussie
+                Log::info('Réponse TMDB:', [
+                    'status' => $response->status(),
+                    'body' => $response->json()
+                ]);
+
+                if ($response->successful()) {
                     $data = $response->json(); // il recupere les données de la requete
                     
                     // Debug: voir la réponse de TMDB
@@ -77,11 +99,11 @@ class FavoriteController extends Controller
                         'id' => $favorite->id, // il recupere l'id du favori        
                         'tmdb_id' => $favorite->tmdb_id, // il recupere l'id de la série ou du film
                         'type' => $favorite->type, // il recupere le type de média
-                        'title' => $endpoint === 'movie' ? $data['title'] : $data['name'], // il recupere le titre de la série ou du film
+                        'title' => $favorite->type === 'movie' ? $data['title'] : $data['name'], // il recupere le titre de la série ou du film
                         'overview' => $data['overview'] ?? '', // il recupere la description de la série ou du film
                         'poster_path' => $data['poster_path'] ?? null, // il recupere le chemin de l'affiche de la série ou du film
                         'vote_average' => $data['vote_average'] ?? 0, // il recupere la note de la série ou du film
-                        'release_date' => $endpoint === 'movie' ? // il recupere la date de sortie de la série ou du film
+                        'release_date' => $favorite->type === 'movie' ? // il recupere la date de sortie de la série ou du film
                             ($data['release_date'] ?? null) : // si c'est un film
                             ($data['first_air_date'] ?? null) // si c'est une série
                     ];
