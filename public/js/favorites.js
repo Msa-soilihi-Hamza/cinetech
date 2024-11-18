@@ -44,7 +44,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             } catch (error) {
                 console.error('Erreur:', error);
-                showNotification('Une erreur est survenue', 'error');
             }
         });
     });

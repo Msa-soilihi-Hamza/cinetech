@@ -97,8 +97,7 @@ class FavoriteController extends Controller
             ]);
 
             return view('favorites.index', [
-                'favorites' => collect(), // il recupere les favoris
-                'error' => 'Une erreur est survenue: ' . $e->getMessage() // il affiche un message d'erreur
+                'favorites' => collect()  // il recupere les favoris
             ]);
         }
     }
