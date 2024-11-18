@@ -16,18 +16,6 @@
 
     @stack('scripts')
 
-    @if(session('success'))
-        <div class="fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg">
-            {{ session('success') }}
-        </div>
-    @endif
-
-    @if(session('error'))
-        <div class="fixed bottom-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg">
-            {{ session('error') }}
-        </div>
-    @endif
-
     <script src="{{ asset('js/favorites.js') }}"></script>
 </body>
 </html>

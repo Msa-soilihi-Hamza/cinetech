@@ -10,12 +10,6 @@
             @endif
         </div>
 
-        @if(isset($error))
-            <div class="bg-red-500 text-white p-4 rounded-lg mb-4">
-                {{ $error }}
-            </div>
-        @endif
-
         @if($favorites->isEmpty())
             <div class="bg-gray-800 rounded-lg p-8 text-center">
                 <p class="text-gray-400 text-lg">Vous n'avez pas encore de favoris.</p>
@@ -26,7 +20,7 @@
         @else
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 @foreach($favorites as $favorite)
-                    <div class="bg-gray-800 rounded-lg overflow-hidden shadow-lg transition-transform hover:scale-105">
+                    <div id="favorite-{{ $favorite['tmdb_id'] }}" class="bg-gray-800 rounded-lg overflow-hidden shadow-lg transition-transform hover:scale-105">
                         <a href="{{ route($favorite['type'] === 'Film' ? 'movies.show' : 'tv.show', $favorite['tmdb_id']) }}" class="block">
                             @if($favorite['poster_path'])
                                 <img src="https://image.tmdb.org/t/p/w500{{ $favorite['poster_path'] }}"
@@ -47,8 +41,9 @@
                                 </h3>
                                 <form action="{{ route('favorites.remove') }}" 
                                       method="POST" 
-                                      class="favorite-form inline"
-                                      data-id="{{ $favorite['tmdb_id'] }}">
+                                      class="favorite-form"
+                                      data-id="{{ $favorite['tmdb_id'] }}"
+                                      onsubmit="removeFavorite(event, {{ $favorite['tmdb_id'] }})">
                                     @csrf
                                     @method('DELETE')
                                     <input type="hidden" name="tmdb_id" value="{{ $favorite['tmdb_id'] }}">
@@ -78,13 +73,60 @@
         @endif
     </div>
 </div>
-
-@if(session('success'))
-    <div class="fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg" 
-         x-data="{ show: true }"
-         x-show="show"
-         x-init="setTimeout(() => show = false, 3000)">
-        {{ session('success') }}
-    </div>
-@endif
 @endsection 
+
+@push('scripts')
+<script>
+function removeFavorite(event, tmdbId) {
+    event.preventDefault();
+    
+    const form = event.target;
+    const card = document.getElementById(`favorite-${tmdbId}`);
+    
+    fetch(form.action, {
+        method: 'DELETE',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+            tmdb_id: tmdbId,
+            type: form.querySelector('input[name="type"]').value
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Anime la suppression de la carte
+            card.style.opacity = '0';
+            card.style.transform = 'scale(0.9)';
+            setTimeout(() => {
+                card.remove();
+                
+                // Met à jour le compteur de favoris
+                const countElement = document.querySelector('.text-gray-400');
+                if (countElement) {
+                    const currentCount = parseInt(countElement.textContent);
+                    if (currentCount > 1) {
+                        countElement.textContent = `${currentCount - 1} favoris`;
+                    } else {
+                        location.reload(); // Recharge si c'était le dernier favori
+                    }
+                }
+            }, 300);
+        }
+    })
+    .catch(error => {
+        console.error('Erreur:', error);
+        alert('Une erreur est survenue lors de la suppression du favori.');
+    });
+}
+</script>
+
+<style>
+.bg-gray-800 {
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+</style>
+@endpush 

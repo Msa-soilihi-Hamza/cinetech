@@ -27,12 +27,12 @@ class FavoriteController extends Controller
                 return response()->json(['success' => true]);
             }
 
-            return redirect()->back()->with('success', 'Ajouté aux favoris');
+            return redirect()->back();
         } catch (\Exception $e) {
             if ($request->wantsJson()) {
-                return response()->json(['error' => 'Erreur lors de l\'ajout aux favoris'], 500);
+                return response()->json(['error' => true], 500);
             }
-            return redirect()->back()->with('error', 'Erreur lors de l\'ajout aux favoris');
+            return redirect()->back();
         }
     }
 
@@ -114,12 +114,12 @@ class FavoriteController extends Controller
                 return response()->json(['success' => true]);
             }
 
-            return redirect()->back()->with('success', 'Retiré des favoris');
+            return redirect()->back();
         } catch (\Exception $e) {
             if ($request->wantsJson()) {
-                return response()->json(['error' => 'Erreur lors de la suppression des favoris'], 500);
+                return response()->json(['error' => true], 500);
             }
-            return redirect()->back()->with('error', 'Erreur lors de la suppression des favoris');
+            return redirect()->back();
         }
     }
 } 
