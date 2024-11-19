@@ -16,13 +16,13 @@
                     <div>
                         <label for="name" class="block text-sm font-medium text-gray-300">Nom</label>
                         <input type="text" name="name" id="name" value="{{ old('name', $user->name) }}"
-                               class="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-white shadow-sm focus:border-purple-500 focus:ring-purple-500">
+                               class="px-4 py-2 mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-white shadow-sm focus:border-purple-500 focus:ring-purple-500">
                     </div>
 
                     <div>
                         <label for="email" class="block text-sm font-medium text-gray-300">Email</label>
                         <input type="email" name="email" id="email" value="{{ old('email', $user->email) }}"
-                               class="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-white shadow-sm focus:border-purple-500 focus:ring-purple-500">
+                               class="px-4 py-2 mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-white shadow-sm focus:border-purple-500 focus:ring-purple-500">
                     </div>
 
                     <div class="flex items-center gap-4">
@@ -48,19 +48,19 @@
                     <div>
                         <label for="current_password" class="block text-sm font-medium text-gray-300">Mot de passe actuel</label>
                         <input type="password" name="current_password" id="current_password"
-                               class="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-white shadow-sm focus:border-purple-500 focus:ring-purple-500">
+                               class="px-4 py-2 mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-white shadow-sm focus:border-purple-500 focus:ring-purple-500">
                     </div>
 
                     <div>
                         <label for="password" class="block text-sm font-medium text-gray-300">Nouveau mot de passe</label>
                         <input type="password" name="password" id="password"
-                               class="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-white shadow-sm focus:border-purple-500 focus:ring-purple-500">
+                               class="px-4 py-2 mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-white shadow-sm focus:border-purple-500 focus:ring-purple-500">
                     </div>
 
                     <div>
                         <label for="password_confirmation" class="block text-sm font-medium text-gray-300">Confirmer le mot de passe</label>
                         <input type="password" name="password_confirmation" id="password_confirmation"
-                               class="mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-white shadow-sm focus:border-purple-500 focus:ring-purple-500">
+                               class="px-4 py-2 mt-1 block w-full rounded-md bg-gray-700 border-gray-600 text-white shadow-sm focus:border-purple-500 focus:ring-purple-500">
                     </div>
 
                     <div class="flex items-center gap-4">

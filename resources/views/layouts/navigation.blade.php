@@ -4,7 +4,7 @@
             <div class="flex">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
-                    <a href="{{ route('dashboard') }}" class="text-red-600 font-bold text-2xl">
+                    <a href="{{ route('dashboard') }}" class="text-purple-500 font-bold text-2xl">
                         CINETECH
                     </a>
                 </div>
