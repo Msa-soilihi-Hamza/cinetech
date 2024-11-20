@@ -39,8 +39,8 @@
                                 <h3 class="text-lg font-bold text-white truncate" title="{{ $favorite['title'] }}">
                                     {{ $favorite['title'] }}
                                 </h3>
-                                <form action="{{ route('favorites.remove') }}" 
-                                      method="POST" 
+                                <form action="{{ route('favorites.destroy') }}"
+                                      method="POST"
                                       class="favorite-form"
                                       data-id="{{ $favorite['tmdb_id'] }}"
                                       onsubmit="removeFavorite(event, {{ $favorite['tmdb_id'] }})">
@@ -48,7 +48,7 @@
                                     @method('DELETE')
                                     <input type="hidden" name="tmdb_id" value="{{ $favorite['tmdb_id'] }}">
                                     <input type="hidden" name="type" value="{{ $favorite['type'] === 'Film' ? 'movie' : 'tv' }}">
-                                    <button type="submit" 
+                                    <button type="submit"
                                             class="text-purple-500 hover:text-purple-700 transition-colors"
                                             title="Retirer des favoris">
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
