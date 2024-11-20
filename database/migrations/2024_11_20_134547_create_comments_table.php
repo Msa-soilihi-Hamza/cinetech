@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('media_type'); // Pour distinguer entre 'movie' et 'series'
             $table->unsignedBigInteger('media_id'); // ID du film ou de la série depuis l'API
             $table->unsignedBigInteger('parent_id')->nullable(); // Pour les réponses aux commentaires
+            
             $table->timestamps();
             
             // Index pour améliorer les performances
