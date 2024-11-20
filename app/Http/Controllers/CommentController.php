@@ -18,7 +18,7 @@ class CommentController extends Controller
     {
         $validated = $request->validate([
             'content' => 'required|string',
-            'media_type' => 'required|in:movie,series',
+            'media_type' => 'required|in:movie,tv',
             'media_id' => 'required|integer',
             'parent_id' => 'nullable|exists:comments,id'
         ]);

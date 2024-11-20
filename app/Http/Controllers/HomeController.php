@@ -82,7 +82,14 @@ class HomeController extends Controller
         }
 
         $tvShow = $response->json();
-        return view('tv.show', compact('tvShow'));
+        
+        $comments = Comment::where('media_type', 'tv')
+                          ->where('media_id', $id)
+                          ->with(['user', 'replies.user'])
+                          ->orderBy('created_at', 'desc')
+                          ->get();
+
+        return view('tv.show', compact('tvShow', 'comments'));
     }
 
     public function tvIndex()
