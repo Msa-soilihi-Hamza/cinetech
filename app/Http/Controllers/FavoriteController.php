@@ -15,24 +15,25 @@ class FavoriteController extends Controller
         try {
             $validated = $request->validate([
                 'tmdb_id' => 'required|integer',
-                'type' => 'required|in:movie,tv'
+                'type' => 'required|string|in:movie,tv'
             ]);
 
-            Auth::user()->favorites()->create([
-                'tmdb_id' => $validated['tmdb_id'],
-                'type' => $validated['type']
-            ]);
+            $favorite = new Favorite();
+            $favorite->user_id = auth()->id();
+            $favorite->tmdb_id = $validated['tmdb_id'];
+            $favorite->type = $validated['type'];
+            $favorite->save();
 
             if ($request->wantsJson()) {
                 return response()->json(['success' => true]);
             }
 
-            return redirect()->back();
+            return redirect()->back()->with('success', 'Ajouté aux favoris avec succès');
         } catch (\Exception $e) {
             if ($request->wantsJson()) {
-                return response()->json(['error' => true], 500);
+                return response()->json(['error' => 'Erreur lors de l\'ajout aux favoris'], 500);
             }
-            return redirect()->back();
+            return redirect()->back()->with('error', 'Erreur lors de l\'ajout aux favoris');
         }
     }
 
