@@ -153,6 +153,59 @@
                                 </div>
                                 
                                 <p class="mt-2 text-gray-300">{{ $comment->content }}</p>
+
+                                <!-- Ajout du système de réponse -->
+                                @auth
+                                    <button onclick="toggleReplyForm({{ $comment->id }})" class="text-purple-500 hover:text-purple-600 text-sm mt-2">
+                                        Répondre
+                                    </button>
+
+                                    <div id="reply-form-{{ $comment->id }}" class="mt-2 hidden">
+                                        <form action="{{ route('comments.reply', $comment) }}" method="POST">
+                                            @csrf
+                                            <textarea 
+                                                name="content" 
+                                                rows="2" 
+                                                class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
+                                                placeholder="Votre réponse..."
+                                                required></textarea>
+                                            <div class="mt-2">
+                                                <button type="submit" class="px-4 py-1 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
+                                                    Envoyer
+                                                </button>
+                                                <button type="button" onclick="toggleReplyForm({{ $comment->id }})" class="px-4 py-1 text-gray-400 hover:text-white">
+                                                    Annuler
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                @endauth
+
+                                <!-- Affichage des réponses -->
+                                @if($comment->replies->count() > 0)
+                                    <div class="ml-8 mt-4 space-y-3">
+                                        @foreach($comment->replies as $reply)
+                                            <div class="bg-gray-800 rounded-lg p-3">
+                                                <div class="flex justify-between items-start">
+                                                    <div>
+                                                        <h5 class="font-bold text-white">{{ $reply->user->name }}</h5>
+                                                        <p class="text-xs text-gray-400">{{ $reply->created_at->diffForHumans() }}</p>
+                                                    </div>
+                                                    @if(Auth::id() === $reply->user_id)
+                                                        <form action="{{ route('comments.destroy', $reply) }}" method="POST" class="inline">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="submit" class="text-red-500 hover:text-red-600 text-sm">
+                                                                Supprimer
+                                                            </button>
+                                                        </form>
+                                                    @endif
+                                                </div>
+                                                <p class="mt-1 text-gray-300">{{ $reply->content }}</p>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                @endif
                             </div>
                         @endforeach
                     @else
@@ -163,4 +216,11 @@
         </div>
     </div>
 </div>
+
+<script>
+function toggleReplyForm(commentId) {
+    const form = document.getElementById(`reply-form-${commentId}`);
+    form.classList.toggle('hidden');
+}
+</script>
 @endsection

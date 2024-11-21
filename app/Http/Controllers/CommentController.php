@@ -95,6 +95,6 @@ class CommentController extends Controller
             'parent_id' => $comment->id
         ]);
 
-        return back()->with('success', 'Réponse ajoutée avec succès');
+        return back();
     }
 }

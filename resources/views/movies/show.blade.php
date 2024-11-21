@@ -153,6 +153,32 @@
                                 </div>
                                 
                                 <p class="mt-2 text-gray-300">{{ $comment->content }}</p>
+
+                                @auth
+                                    <button onclick="toggleReplyForm({{ $comment->id }})" class="text-purple-500 hover:text-purple-600 text-sm mt-2">
+                                        Répondre
+                                    </button>
+
+                                    <div id="reply-form-{{ $comment->id }}" class="mt-2 hidden">
+                                        <form action="{{ route('comments.reply', $comment) }}" method="POST">
+                                            @csrf
+                                            <textarea 
+                                                name="content" 
+                                                rows="2" 
+                                                class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
+                                                placeholder="Votre réponse..."
+                                                required></textarea>
+                                            <div class="mt-2">
+                                                <button type="submit" class="px-4 py-1 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
+                                                    Envoyer
+                                                </button>
+                                                <button type="button" onclick="toggleReplyForm({{ $comment->id }})" class="px-4 py-1 text-gray-400 hover:text-white">
+                                                    Annuler
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                @endauth
                             </div>
                         @endforeach
                     @else
@@ -163,4 +189,11 @@
         </div>
     </div>
 </div>
+
+<script>
+function toggleReplyForm(commentId) {
+    const form = document.getElementById(`reply-form-${commentId}`);
+    form.classList.toggle('hidden');
+}
+</script>
 @endsection 
