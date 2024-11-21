@@ -156,24 +156,35 @@
 
                                 <!-- Ajout du système de réponse -->
                                 @auth
-                                    <button onclick="toggleReplyForm({{ $comment->id }})" class="text-purple-500 hover:text-purple-600 text-sm mt-2">
+                                    <button onclick="toggleReplyForm({{ $comment->id }})" 
+                                            class="text-purple-500 hover:text-purple-600 text-sm mt-3 flex items-center gap-2 transition-colors">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+                                        </svg>
                                         Répondre
                                     </button>
 
-                                    <div id="reply-form-{{ $comment->id }}" class="mt-2 hidden">
-                                        <form action="{{ route('comments.reply', $comment) }}" method="POST">
+                                    <div id="reply-form-{{ $comment->id }}" class="mt-3 hidden">
+                                        <form action="{{ route('comments.reply', $comment) }}" method="POST" 
+                                              class="bg-gray-750 p-4 rounded-lg border border-gray-600">
                                             @csrf
                                             <textarea 
                                                 name="content" 
                                                 rows="2" 
-                                                class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
+                                                class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
                                                 placeholder="Votre réponse..."
                                                 required></textarea>
-                                            <div class="mt-2">
-                                                <button type="submit" class="px-4 py-1 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
+                                            <div class="mt-3 flex gap-2">
+                                                <button type="submit" 
+                                                        class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors flex items-center gap-2">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                                                    </svg>
                                                     Envoyer
                                                 </button>
-                                                <button type="button" onclick="toggleReplyForm({{ $comment->id }})" class="px-4 py-1 text-gray-400 hover:text-white">
+                                                <button type="button" 
+                                                        onclick="toggleReplyForm({{ $comment->id }})" 
+                                                        class="px-4 py-2 text-gray-400 hover:text-white border border-gray-600 rounded-lg hover:bg-gray-700 transition-colors">
                                                     Annuler
                                                 </button>
                                             </div>
@@ -183,25 +194,39 @@
 
                                 <!-- Affichage des réponses -->
                                 @if($comment->replies->count() > 0)
-                                    <div class="ml-8 mt-4 space-y-3">
+                                    <div class="ml-8 mt-4 space-y-3 border-l-2 border-purple-500 pl-4">
                                         @foreach($comment->replies as $reply)
-                                            <div class="bg-gray-800 rounded-lg p-3">
+                                            <div class="bg-gray-800 rounded-lg p-4 shadow-lg transform hover:scale-[1.02] transition-transform">
                                                 <div class="flex justify-between items-start">
-                                                    <div>
-                                                        <h5 class="font-bold text-white">{{ $reply->user->name }}</h5>
-                                                        <p class="text-xs text-gray-400">{{ $reply->created_at->diffForHumans() }}</p>
+                                                    <div class="flex items-center gap-2">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+                                                        </svg>
+                                                        
+                                                        <div>
+                                                            <h5 class="font-bold text-white flex items-center gap-2">
+                                                                {{ $reply->user->name }}
+                                                                <span class="text-xs text-purple-400 font-normal">Réponse</span>
+                                                            </h5>
+                                                            <p class="text-xs text-gray-400">{{ $reply->created_at->diffForHumans() }}</p>
+                                                        </div>
                                                     </div>
+                                                    
                                                     @if(Auth::id() === $reply->user_id)
                                                         <form action="{{ route('comments.destroy', $reply) }}" method="POST" class="inline">
                                                             @csrf
                                                             @method('DELETE')
-                                                            <button type="submit" class="text-red-500 hover:text-red-600 text-sm">
+                                                            <button type="submit" 
+                                                                    class="text-red-500 hover:text-red-600 text-sm bg-gray-700 px-2 py-1 rounded-lg transition-colors">
                                                                 Supprimer
                                                             </button>
                                                         </form>
                                                     @endif
                                                 </div>
-                                                <p class="mt-1 text-gray-300">{{ $reply->content }}</p>
+                                                
+                                                <div class="mt-2 text-gray-300 bg-gray-750 p-3 rounded-lg">
+                                                    {{ $reply->content }}
+                                                </div>
                                             </div>
                                         @endforeach
                                     </div>
