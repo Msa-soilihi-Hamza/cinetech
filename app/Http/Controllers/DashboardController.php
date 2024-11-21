@@ -24,30 +24,11 @@ class DashboardController extends Controller
             $currentSection = request()->get('section', 'popular');
             $currentPage = request()->get('page', 1);
             $perPage = 20;
-            $userId = auth()->id();
-
-            // Récupérer les films populaires
-            $popularMovies = Cache::remember('popular_movies', 3600, function () {
-                $allMovies = [];
-                for ($page = 1; $page <= 5; $page++) {
-                    $response = Http::withOptions(['verify' => false])
-                        ->get('https://api.themoviedb.org/3/movie/popular', [
-                            'api_key' => env('TMDB_API_KEY'),
-                            'language' => 'fr-FR',
-                            'page' => $page
-                        ]);
-
-                    if ($response->successful()) {
-                        $allMovies = array_merge($allMovies, $response->json()['results']);
-                    }
-                }
-                return $allMovies;
-            });
 
             // Récupérer les films tendance
             $trendingMovies = Cache::remember('trending_movies', 3600, function () {
                 $allTrending = [];
-                for ($page = 1; $page <= 5; $page++) {
+                for ($page = 1; $page <= 10; $page++) {
                     $response = Http::withOptions(['verify' => false])
                         ->get('https://api.themoviedb.org/3/trending/movie/week', [
                             'api_key' => env('TMDB_API_KEY'),
@@ -60,6 +41,24 @@ class DashboardController extends Controller
                     }
                 }
                 return $allTrending;
+            });
+
+            // Récupérer les films populaires
+            $popularMovies = Cache::remember('popular_movies', 3600, function () {
+                $allMovies = [];
+                for ($page = 1; $page <= 10; $page++) {
+                    $response = Http::withOptions(['verify' => false])
+                        ->get('https://api.themoviedb.org/3/movie/popular', [
+                            'api_key' => env('TMDB_API_KEY'),
+                            'language' => 'fr-FR',
+                            'page' => $page
+                        ]);
+
+                    if ($response->successful()) {
+                        $allMovies = array_merge($allMovies, $response->json()['results']);
+                    }
+                }
+                return $allMovies;
             });
 
             // Sélectionner les films en fonction de la section
@@ -76,8 +75,7 @@ class DashboardController extends Controller
 
             return view('dashboard', [
                 'movies' => $paginator,
-                'currentSection' => $currentSection,
-                'userId' => $userId
+                'currentSection' => $currentSection
             ]);
 
         } catch (\Exception $e) {
