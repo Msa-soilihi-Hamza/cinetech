@@ -28,7 +28,7 @@ class CommentController extends Controller
             'user_id' => Auth::id()
         ]);
 
-        return back()->with('success', 'Commentaire ajouté avec succès');
+        return back();
     }
 
     public function update(Request $request, Comment $comment): RedirectResponse

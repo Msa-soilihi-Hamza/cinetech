@@ -21,7 +21,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 @foreach($favorites as $favorite)
                     <div id="favorite-{{ $favorite['tmdb_id'] }}" class="bg-gray-800 rounded-lg overflow-hidden shadow-lg transition-transform hover:scale-105">
-                        <a href="{{ route($favorite['type'] === 'Film' ? 'movies.show' : 'tv.show', $favorite['tmdb_id']) }}" class="block">
+                        <a href="{{ route($favorite['type'] === 'movie' ? 'movies.show' : 'tv.show', ['id' => $favorite['tmdb_id']]) }}" class="block">
                             @if($favorite['poster_path'])
                                 <img src="https://image.tmdb.org/t/p/w500{{ $favorite['poster_path'] }}"
                                      alt="{{ $favorite['title'] }}"
