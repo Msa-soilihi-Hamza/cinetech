@@ -11,17 +11,17 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                <x-nav-link :href="route('all.media')" :active="request()->routeIs('all.media')" class="text-gray-300 hover:text-white">
+                <x-nav-link :href="route('all.media')" :active="request()->routeIs('all.media')" class="text-purple-500 hover:text-purple-50">
                         {{ __('Films & Séries') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" class="text-gray-300 hover:text-white">
+                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" class="text-white hover:text-white">
                         {{ __('Films') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('tv.index')" :active="request()->routeIs('tv.*')" class="text-gray-300 hover:text-white">
+                    <x-nav-link :href="route('tv.index')" :active="request()->routeIs('tv.*')" class="text-white hover:text-white">
                         {{ __('Séries') }}
                     </x-nav-link>
                    
-                    <x-nav-link :href="route('favorites.index')" :active="request()->routeIs('favorites.index')" class="text-gray-300 hover:text-white">
+                    <x-nav-link :href="route('favorites.index')" :active="request()->routeIs('favorites.index')" class="text-white hover:text-white">
                         {{ __('Favoris') }}
                     </x-nav-link>
                 </div>
@@ -34,7 +34,7 @@
                         <input type="text" 
                                id="search-input"
                                name="query"
-                               class="w-full bg-gray-800 text-white rounded-lg pl-4 pr-10 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                               class="w-full bg-gray-800 text-white rounded-lg pl-4 pr-10 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
                                placeholder="Rechercher un film ou une série..."
                                autocomplete="off">
                         <div id="search-results" class="absolute z-50 w-full mt-1 bg-gray-800 rounded-lg shadow-lg hidden">
@@ -49,7 +49,7 @@
                     <!-- Utilisateur connecté -->
                     <x-dropdown align="right" width="48">
                         <x-slot name="trigger">
-                            <button class="inline-flex items-center px-3 py-2 text-sm leading-4 font-medium rounded-md text-gray-300 hover:text-white focus:outline-none transition ease-in-out duration-150">
+                            <button class="inline-flex items-center px-3 py-2 text-sm leading-4 font-medium rounded-md text-white hover:text-white focus:outline-none transition ease-in-out duration-150">
                                 <div class="flex items-center">
                                     <div>{{ Auth::user()->name }}</div>
                                     
@@ -66,12 +66,7 @@
                             <x-dropdown-link :href="route('profile.edit')" class="text-gray-700">
                                 {{ __('Mon Profil') }}
                             </x-dropdown-link>
-                            <x-dropdown-link href="#" class="text-gray-700">
-                                {{ __('Mes Favoris') }}
-                            </x-dropdown-link>
-                            <x-dropdown-link href="#" class="text-gray-700">
-                                {{ __('Historique') }}
-                            </x-dropdown-link>
+                           
 
                             <!-- Authentication -->
                             <form method="POST" action="{{ route('logout') }}">
@@ -87,10 +82,10 @@
                 @else
                     <!-- Utilisateur non connecté -->
                     <div class="flex space-x-4">
-                        <a href="{{ route('login') }}" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm">
+                        <a href="{{ route('login') }}" class="text-white hover:text-white px-3 py-2 rounded-md text-sm">
                             {{ __('Connexion') }}
                         </a>
-                        <a href="{{ route('register') }}" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm">
+                        <a href="{{ route('register') }}" class="text-white hover:text-white px-3 py-2 rounded-md text-sm">
                             {{ __('Inscription') }}
                         </a>
                     </div>
