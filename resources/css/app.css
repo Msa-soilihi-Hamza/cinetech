@@ -14,3 +14,9 @@
 .to-gray-900 {
     --tw-gradient-to: #111827;
 }
+
+@media (min-width: 950px) {
+    #mobile-menu {
+        display: none !important;
+    }
+}

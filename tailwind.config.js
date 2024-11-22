@@ -8,7 +8,12 @@ module.exports = {
         "./resources/**/*.vue",
     ],
     theme: {
-        extend: {},
+        extend: {
+            screens: {
+                'mobile': {'max': '949px'},
+                'desktop': '950px',
+            },
+        },
     },
-    plugins: [],
+    plugins: [require('@tailwindcss/forms')],
 };

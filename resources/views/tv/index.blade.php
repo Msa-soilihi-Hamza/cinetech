@@ -16,7 +16,7 @@
         </div>
 
         <!-- Grille de séries -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
             @forelse ($shows as $show)
                 <a href="{{ route('tv.show', ['id' => $show['id']]) }}" class="block">
                     <div class="bg-gray-800 rounded-lg overflow-hidden shadow-lg transform transition-transform hover:scale-105">
