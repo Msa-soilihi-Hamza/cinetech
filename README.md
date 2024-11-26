@@ -1,66 +1,117 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
 
-## About Laravel
+# Cinetech - Guide de Déploiement
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Prérequis
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- PHP 8.1 ou supérieur
+- Composer
+- Node.js et NPM
+- Git
+- Une clé API TMDB (The Movie Database)
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Installation en Local
 
-## Learning Laravel
+1. **Cloner le projet**
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+```bash
+git clone https://github.com/votre-username/cinetech.git
+cd cinetech
+```
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+2. **Installer les dépendances**
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+```bash
+composer install
+npm install
+```
 
-## Laravel Sponsors
+3. **Configuration de l'environnement**
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+```bash
+cp .env.example .env
+php artisan key:generate
+```
 
-### Premium Partners
+4. **Configurer la base de données**
+- Créer une base de données MySQL
+- Modifier le fichier `.env` avec vos informations :
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=cinetech
+DB_USERNAME=votre_username
+DB_PASSWORD=votre_password
+```
 
-## Contributing
+5. **Configurer l'API TMDB**
+- Créer un compte sur [TMDB](https://www.themoviedb.org/)
+- Obtenir une clé API dans les paramètres de votre compte
+- Ajouter la clé dans le fichier `.env` :
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```env
+TMDB_API_KEY=votre_cle_api
+```
 
-## Code of Conduct
+6. **Lancer les migrations**
+```bash
+php artisan migrate
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+7. **Compiler les assets**
+```bash
+npm run dev
+```
 
-## Security Vulnerabilities
+8. **Démarrer le serveur**
+```bash
+php artisan serve
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+L'application est maintenant accessible à l'adresse `http://localhost:8000`
 
-## License
+## Déploiement sur GitHub
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+1. **Créer un nouveau repository sur GitHub**
+
+2. **Initialiser Git et pousser le code**
+```bash
+git init
+git add .
+git commit -m "Initial commit"
+git branch -M main
+git remote add origin https://github.com/votre-username/cinetech.git
+git push -u origin main
+```
+
+## Maintenance
+
+- Pour mettre à jour les dépendances :
+```bash
+composer update
+npm update
+```
+
+- Pour les migrations après modification de la base de données :
+```bash
+php artisan migrate
+```
+
+## Sécurité
+
+- Ne jamais commiter le fichier `.env`
+- Protéger votre clé API TMDB
+- Mettre à jour régulièrement les dépendances
+
+## Support
+
+En cas de problème, vous pouvez :
+- Ouvrir une issue sur GitHub
+- Consulter la [documentation Laravel](https://laravel.com/docs)
+- Consulter la [documentation TMDB](https://developers.themoviedb.org/3)
+
+## Licence
+
+Ce projet est sous licence MIT. Voir le fichier LICENSE pour plus de détails.
