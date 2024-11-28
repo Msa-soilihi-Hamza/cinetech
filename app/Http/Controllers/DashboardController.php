@@ -29,17 +29,15 @@ class DashboardController extends Controller
         });
     }
 
-    public function index()
+    public function index(Request $request)
     {
         try {
-            $currentPage = request()->get('page', 1);
-            $genre = request()->get('genre');
+            $currentPage = $request->get('page', 1);
+            $genre = $request->get('genre');
             $perPage = 20;
 
-            // Toujours récupérer les genres en premier
             $genres = $this->getGenres();
 
-            // Si pas de genres, retourner une vue avec un message d'erreur
             if (empty($genres)) {
                 return view('dashboard', [
                     'movies' => [],
@@ -74,6 +72,12 @@ class DashboardController extends Controller
                         'genre' => $genre
                     ])]
                 );
+
+                if ($request->ajax()) {
+                    return view('components.movies-grid', [
+                        'movies' => $paginator
+                    ])->render();
+                }
 
                 return view('dashboard', [
                     'movies' => $paginator,
