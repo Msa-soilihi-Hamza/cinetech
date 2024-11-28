@@ -9,71 +9,90 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 class TvController extends Controller
 {
+    private function getGenres()
+    {
+        return Cache::remember('tv_genres', 3600, function () {
+            try {
+                $response = Http::withOptions(['verify' => false])
+                    ->get('https://api.themoviedb.org/3/genre/tv/list', [
+                        'api_key' => env('TMDB_API_KEY'),
+                        'language' => 'fr-FR'
+                    ]);
+
+                if ($response->successful()) {
+                    return $response->json()['genres'];
+                }
+            } catch (\Exception $e) {
+                \Log::error('Erreur lors de la récupération des genres: ' . $e->getMessage());
+            }
+            return [];
+        });
+    }
+
     public function index()
     {
         try {
-            $currentSection = request()->get('section', 'popular');
             $currentPage = request()->get('page', 1);
+            $genre = request()->get('genre');
             $perPage = 20;
 
-            // Récupérer les séries populaires
-            $popularTVShows = Cache::remember('popular_tv_shows', 3600, function () {
-                $allShows = [];
-                for ($page = 1; $page <= 10; $page++) {
-                    $response = Http::withOptions(['verify' => false])
-                        ->get('https://api.themoviedb.org/3/tv/popular', [
-                            'api_key' => env('TMDB_API_KEY'),
-                            'language' => 'fr-FR',
-                            'page' => $page
-                        ]);
+            // Toujours récupérer les genres en premier
+            $genres = $this->getGenres();
 
-                    if ($response->successful()) {
-                        $allShows = array_merge($allShows, $response->json()['results']);
-                    }
-                }
-                return $allShows;
-            });
+            // Si pas de genres, retourner une vue avec un message d'erreur
+            if (empty($genres)) {
+                return view('tv.index', [
+                    'shows' => [],
+                    'genres' => [],
+                    'error' => 'Impossible de charger les genres.'
+                ]);
+            }
 
-            // Récupérer les séries tendance
-            $trendingTVShows = Cache::remember('trending_tv_shows', 3600, function () {
-                $allTrending = [];
-                for ($page = 1; $page <= 10; $page++) {
-                    $response = Http::withOptions(['verify' => false])
-                        ->get('https://api.themoviedb.org/3/trending/tv/week', [
-                            'api_key' => env('TMDB_API_KEY'),
-                            'language' => 'fr-FR',
-                            'page' => $page
-                        ]);
+            $params = [
+                'api_key' => env('TMDB_API_KEY'),
+                'language' => 'fr-FR',
+                'page' => $currentPage,
+                'sort_by' => 'popularity.desc'
+            ];
 
-                    if ($response->successful()) {
-                        $allTrending = array_merge($allTrending, $response->json()['results']);
-                    }
-                }
-                return $allTrending;
-            });
+            if ($genre) {
+                $params['with_genres'] = $genre;
+            }
 
-            // Sélectionner les séries en fonction de la section
-            $shows = $currentSection === 'popular' ? $popularTVShows : $trendingTVShows;
+            $response = Http::withOptions(['verify' => false])
+                ->get('https://api.themoviedb.org/3/discover/tv', $params);
 
-            // Créer le paginator
-            $paginator = new LengthAwarePaginator(
-                array_slice($shows, ($currentPage - 1) * $perPage, $perPage),
-                count($shows),
-                $perPage,
-                $currentPage,
-                ['path' => route('tv.index'), 'query' => ['section' => $currentSection]]
-            );
+            if ($response->successful()) {
+                $data = $response->json();
+                
+                $paginator = new LengthAwarePaginator(
+                    $data['results'],
+                    $data['total_results'],
+                    20,
+                    $currentPage,
+                    ['path' => route('tv.index'), 'query' => array_filter([
+                        'genre' => $genre
+                    ])]
+                );
+
+                return view('tv.index', [
+                    'shows' => $paginator,
+                    'genres' => $genres,
+                    'currentGenre' => $genre
+                ]);
+            }
 
             return view('tv.index', [
-                'shows' => $paginator,
-                'currentSection' => $currentSection
+                'shows' => [],
+                'genres' => $genres,
+                'error' => 'Erreur lors de la récupération des séries.'
             ]);
 
         } catch (\Exception $e) {
             \Log::error('Erreur dans TvController@index: ' . $e->getMessage());
             return view('tv.index', [
                 'shows' => [],
-                'currentSection' => $currentSection,
+                'genres' => [],
                 'error' => 'Une erreur est survenue lors de la récupération des séries.'
             ]);
         }

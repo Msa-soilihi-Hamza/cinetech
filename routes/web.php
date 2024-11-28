@@ -7,6 +7,7 @@ use App\Http\Controllers\MovieController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\TvController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -25,7 +26,7 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/search', [HomeController::class, 'search'])->name('search');
 Route::get('/movie/{id}', [HomeController::class, 'showMovie'])->name('movies.show');
 Route::get('/tv/{id}', [HomeController::class, 'showTVShow'])->name('tv.show');
-Route::get('/tv', [HomeController::class, 'tvIndex'])->name('tv.index');
+Route::get('/tv', [TvController::class, 'index'])->name('tv.index');
 Route::get('/films-et-series', [MovieController::class, 'allMedia'])->name('all.media');
 Route::get('/search/autocomplete', [SearchController::class, 'autocomplete'])->name('search.autocomplete');
 
