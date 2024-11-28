@@ -381,34 +381,41 @@ async function showActorFilmography(actorId, actorName) {
             return;
         }
         
-        let html = '<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">';
+        let html = '<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">';
         
         data.cast
             .sort((a, b) => new Date(b.release_date || '1900') - new Date(a.release_date || '1900'))
             .forEach(movie => {
                 html += `
-                    <div class="bg-gray-700 rounded-lg overflow-hidden hover:bg-gray-600 transition-colors">
-                        <div class="relative aspect-[2/3]">
+                    <div onclick="window.location.href='/movie/${movie.id}'" 
+                         class="bg-gray-700 rounded-lg overflow-hidden shadow-md transform hover:scale-105 transition-all duration-200 hover:shadow-purple-500/20 cursor-pointer">
+                        <div class="relative aspect-[2/3] group">
                             ${movie.poster_path 
-                                ? `<img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" 
+                                ? `<img src="https://image.tmdb.org/t/p/w342${movie.poster_path}" 
                                        alt="${movie.title}" 
-                                       class="w-full h-full object-cover">`
+                                       class="w-full h-full object-cover transition-transform duration-200 group-hover:scale-110">`
                                 : `<div class="w-full h-full bg-gray-800 flex items-center justify-center">
-                                       <span class="text-gray-600">Pas d'affiche</span>
+                                       <span class="text-gray-600 text-2xl">?</span>
                                    </div>`
                             }
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-end">
+                                <div class="p-2 text-white">
+                                    <p class="text-xs font-medium">${movie.character || 'Rôle non spécifié'}</p>
+                                </div>
+                            </div>
                         </div>
-                        <div class="p-4">
-                            <h4 class="font-semibold text-lg text-white">${movie.title}</h4>
-                            <p class="text-sm text-gray-400">${movie.release_date ? new Date(movie.release_date).getFullYear() : 'Date inconnue'}</p>
-                            <p class="text-sm text-purple-400 mt-1">${movie.character || 'Rôle non spécifié'}</p>
-                            ${movie.vote_average 
-                                ? `<div class="mt-2 flex items-center">
-                                       <span class="text-yellow-400">★</span>
-                                       <span class="ml-1 text-sm text-gray-300">${movie.vote_average.toFixed(1)}/10</span>
-                                   </div>`
-                                : ''
-                            }
+                        <div class="p-2">
+                            <h4 class="font-semibold text-sm text-white mb-1 line-clamp-1">${movie.title}</h4>
+                            <div class="flex items-center justify-between text-xs">
+                                <p class="text-gray-400">${movie.release_date ? new Date(movie.release_date).getFullYear() : 'Date inconnue'}</p>
+                                ${movie.vote_average 
+                                    ? `<div class="flex items-center bg-gray-800 px-1.5 py-0.5 rounded-full">
+                                           <span class="text-yellow-400 mr-0.5">★</span>
+                                           <span class="text-gray-300">${movie.vote_average.toFixed(1)}</span>
+                                       </div>`
+                                    : ''
+                                }
+                            </div>
                         </div>
                     </div>
                 `;
@@ -423,7 +430,7 @@ async function showActorFilmography(actorId, actorName) {
             <div class="text-center py-8">
                 <p class="text-red-500 mb-4">${error.message || 'Une erreur est survenue lors du chargement de la filmographie.'}</p>
                 <button onclick="showActorFilmography(${actorId}, '${actorName}')" 
-                        class="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 transition-colors">
+                        class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
                     Réessayer
                 </button>
             </div>
