@@ -19,4 +19,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('/actor/{id}/movies', [ActorController::class, 'getFilmography']);
+Route::get('/actor/{id}/movies', [ActorController::class, 'getMovies']);

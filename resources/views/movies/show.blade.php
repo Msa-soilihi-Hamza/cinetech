@@ -105,7 +105,7 @@
                                     </div>
                                     
                                     <!-- Modal pour tous les acteurs -->
-                                    <div id="castModal" class="hidden fixed inset-0 bg-black bg-opacity-75 z-50">
+                                    <div id="castModal" class="hidden fixed inset-0 bg-black bg-opacity-75 z-40">
                                         <div class="container mx-auto h-full overflow-y-auto py-8">
                                             <div class="bg-gray-800 p-6 rounded-lg max-w-4xl mx-auto">
                                                 <div class="flex justify-between items-center mb-6">
@@ -118,7 +118,8 @@
                                                 </div>
                                                 <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                                                     @foreach($movie['credits']['cast'] as $actor)
-                                                        <div class="bg-gray-700 p-4 rounded-lg">
+                                                        <div class="bg-gray-700 p-4 rounded-lg hover:bg-gray-600 transition-colors cursor-pointer"
+                                                             onclick="showActorFilmography({{ $actor['id'] }}, '{{ $actor['name'] }}')">
                                                             @if(isset($actor['profile_path']))
                                                                 <img src="https://image.tmdb.org/t/p/w185{{ $actor['profile_path'] }}"
                                                                      alt="{{ $actor['name'] }}"
@@ -144,7 +145,7 @@
         </div>
 
         <!-- Modal Filmographie -->
-        <div id="filmographyModal" class="hidden fixed inset-0 bg-black bg-opacity-75 z-[9999] overflow-y-auto">
+        <div id="filmographyModal" class="hidden fixed inset-0 bg-black bg-opacity-75 z-50 overflow-y-auto">
             <div class="min-h-screen px-4 text-center">
                 <!-- Overlay -->
                 <div class="fixed inset-0 transition-opacity" aria-hidden="true" onclick="hideFilmographyModal()">
@@ -355,7 +356,6 @@ async function showActorFilmography(actorId, actorName) {
     const nameElement = document.getElementById('actorName');
     const content = document.getElementById('filmographyContent');
     
-    // Afficher le modal et le loader
     modal.classList.remove('hidden');
     document.body.style.overflow = 'hidden';
     nameElement.textContent = `Filmographie de ${actorName}`;
@@ -366,10 +366,15 @@ async function showActorFilmography(actorId, actorName) {
     `;
     
     try {
+        console.log('Fetching filmography for actor:', actorId);
         const response = await fetch(`/api/actor/${actorId}/movies`);
-        if (!response.ok) throw new Error('Erreur réseau');
-        
         const data = await response.json();
+        
+        console.log('API Response:', data);
+        
+        if (!response.ok) {
+            throw new Error(data.error || `Erreur ${response.status}`);
+        }
         
         if (!data.cast || data.cast.length === 0) {
             content.innerHTML = '<p class="text-center text-gray-400">Aucun film trouvé pour cet acteur.</p>';
@@ -413,11 +418,12 @@ async function showActorFilmography(actorId, actorName) {
         content.innerHTML = html;
         
     } catch (error) {
+        console.error('Error:', error);
         content.innerHTML = `
-            <div class="text-center text-red-500 py-8">
-                <p>Une erreur est survenue lors du chargement de la filmographie.</p>
+            <div class="text-center py-8">
+                <p class="text-red-500 mb-4">${error.message || 'Une erreur est survenue lors du chargement de la filmographie.'}</p>
                 <button onclick="showActorFilmography(${actorId}, '${actorName}')" 
-                        class="mt-4 px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 transition-colors">
+                        class="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 transition-colors">
                     Réessayer
                 </button>
             </div>
