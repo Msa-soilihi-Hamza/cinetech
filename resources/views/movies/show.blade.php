@@ -58,23 +58,117 @@
                         @endif
 
                         @if(isset($movie['credits']['cast']))
-                            <div class="cast-section">
+                            <div class="cast-section mb-8">
                                 <h2 class="text-xl font-semibold mb-4">Distribution principale</h2>
                                 <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                                     @foreach(array_slice($movie['credits']['cast'], 0, 8) as $actor)
-                                        <div class="bg-gray-700 p-4 rounded-lg text-center">
+                                        <div class="bg-gray-700 p-4 rounded-lg text-center hover:bg-gray-600 transition-colors cursor-pointer"
+                                             onclick="showActorFilmography({{ $actor['id'] }}, '{{ $actor['name'] }}')">
                                             @if(isset($actor['profile_path']))
                                                 <img src="https://image.tmdb.org/t/p/w185{{ $actor['profile_path'] }}"
                                                      alt="{{ $actor['name'] }}"
                                                      class="w-24 h-24 rounded-full mx-auto object-cover mb-3">
+                                            @else
+                                                <div class="w-24 h-24 rounded-full mx-auto mb-3 bg-gray-800 flex items-center justify-center">
+                                                    <span class="text-gray-400 text-3xl">?</span>
+                                                </div>
                                             @endif
                                             <p class="font-semibold">{{ $actor['name'] }}</p>
                                             <p class="text-sm text-gray-400">{{ $actor['character'] }}</p>
+                                            @if(isset($actor['popularity']))
+                                                <p class="text-xs text-purple-400 mt-1">Popularité: {{ number_format($actor['popularity'], 1) }}</p>
+                                            @endif
                                         </div>
                                     @endforeach
                                 </div>
+                                
+                                @if(isset($movie['credits']['crew']))
+                                    <div class="mt-8">
+                                        <h2 class="text-xl font-semibold mb-4">Équipe technique principale</h2>
+                                        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                                            @foreach(array_slice($movie['credits']['crew'], 0, 4) as $crewMember)
+                                                <div class="bg-gray-700 p-4 rounded-lg">
+                                                    <p class="font-semibold">{{ $crewMember['name'] }}</p>
+                                                    <p class="text-sm text-purple-400">{{ $crewMember['job'] }}</p>
+                                                    <p class="text-xs text-gray-400">{{ $crewMember['department'] }}</p>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                @endif
+                                
+                                @if(count($movie['credits']['cast']) > 8)
+                                    <div class="mt-4 text-center">
+                                        <button onclick="showAllCast()" class="text-purple-500 hover:text-purple-400 transition-colors">
+                                            Voir tous les acteurs ({{ count($movie['credits']['cast']) }})
+                                        </button>
+                                    </div>
+                                    
+                                    <!-- Modal pour tous les acteurs -->
+                                    <div id="castModal" class="hidden fixed inset-0 bg-black bg-opacity-75 z-50">
+                                        <div class="container mx-auto h-full overflow-y-auto py-8">
+                                            <div class="bg-gray-800 p-6 rounded-lg max-w-4xl mx-auto">
+                                                <div class="flex justify-between items-center mb-6">
+                                                    <h3 class="text-2xl font-bold">Distribution complète</h3>
+                                                    <button onclick="hideCastModal()" class="text-gray-400 hover:text-white">
+                                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                                        </svg>
+                                                    </button>
+                                                </div>
+                                                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                                                    @foreach($movie['credits']['cast'] as $actor)
+                                                        <div class="bg-gray-700 p-4 rounded-lg">
+                                                            @if(isset($actor['profile_path']))
+                                                                <img src="https://image.tmdb.org/t/p/w185{{ $actor['profile_path'] }}"
+                                                                     alt="{{ $actor['name'] }}"
+                                                                     class="w-20 h-20 rounded-full mx-auto object-cover mb-3">
+                                                            @endif
+                                                            <p class="font-semibold">{{ $actor['name'] }}</p>
+                                                            <p class="text-sm text-gray-400">{{ $actor['character'] }}</p>
+                                                            @if(isset($actor['known_for_department']))
+                                                                <p class="text-xs text-purple-400 mt-1">{{ $actor['known_for_department'] }}</p>
+                                                            @endif
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
                             </div>
                         @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Filmographie -->
+        <div id="filmographyModal" class="hidden fixed inset-0 bg-black bg-opacity-75 z-[9999] overflow-y-auto">
+            <div class="min-h-screen px-4 text-center">
+                <!-- Overlay -->
+                <div class="fixed inset-0 transition-opacity" aria-hidden="true" onclick="hideFilmographyModal()">
+                    <div class="absolute inset-0 bg-gray-900 opacity-75"></div>
+                </div>
+
+                <!-- Centrage vertical -->
+                <span class="inline-block h-screen align-middle" aria-hidden="true">&#8203;</span>
+
+                <!-- Contenu du modal -->
+                <div class="inline-block w-full max-w-6xl p-6 my-8 text-left align-middle transition-all transform bg-gray-800 shadow-xl rounded-lg">
+                    <div class="flex justify-between items-center mb-6 border-b border-gray-700 pb-4">
+                        <h3 class="text-2xl font-bold text-white" id="actorName"></h3>
+                        <button onclick="hideFilmographyModal()" class="text-gray-400 hover:text-white transition-colors">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div id="filmographyContent" class="mt-4">
+                        <div class="flex items-center justify-center py-12">
+                            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -245,5 +339,112 @@ function toggleReplyForm(commentId) {
     const form = document.getElementById(`reply-form-${commentId}`);
     form.classList.toggle('hidden');
 }
+
+function showAllCast() {
+    document.getElementById('castModal').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+function hideCastModal() {
+    document.getElementById('castModal').classList.add('hidden');
+    document.body.style.overflow = 'auto';
+}
+
+async function showActorFilmography(actorId, actorName) {
+    const modal = document.getElementById('filmographyModal');
+    const nameElement = document.getElementById('actorName');
+    const content = document.getElementById('filmographyContent');
+    
+    // Afficher le modal et le loader
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+    nameElement.textContent = `Filmographie de ${actorName}`;
+    content.innerHTML = `
+        <div class="flex items-center justify-center py-12">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500"></div>
+        </div>
+    `;
+    
+    try {
+        const response = await fetch(`/api/actor/${actorId}/movies`);
+        if (!response.ok) throw new Error('Erreur réseau');
+        
+        const data = await response.json();
+        
+        if (!data.cast || data.cast.length === 0) {
+            content.innerHTML = '<p class="text-center text-gray-400">Aucun film trouvé pour cet acteur.</p>';
+            return;
+        }
+        
+        let html = '<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">';
+        
+        data.cast
+            .sort((a, b) => new Date(b.release_date || '1900') - new Date(a.release_date || '1900'))
+            .forEach(movie => {
+                html += `
+                    <div class="bg-gray-700 rounded-lg overflow-hidden hover:bg-gray-600 transition-colors">
+                        <div class="relative aspect-[2/3]">
+                            ${movie.poster_path 
+                                ? `<img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" 
+                                       alt="${movie.title}" 
+                                       class="w-full h-full object-cover">`
+                                : `<div class="w-full h-full bg-gray-800 flex items-center justify-center">
+                                       <span class="text-gray-600">Pas d'affiche</span>
+                                   </div>`
+                            }
+                        </div>
+                        <div class="p-4">
+                            <h4 class="font-semibold text-lg text-white">${movie.title}</h4>
+                            <p class="text-sm text-gray-400">${movie.release_date ? new Date(movie.release_date).getFullYear() : 'Date inconnue'}</p>
+                            <p class="text-sm text-purple-400 mt-1">${movie.character || 'Rôle non spécifié'}</p>
+                            ${movie.vote_average 
+                                ? `<div class="mt-2 flex items-center">
+                                       <span class="text-yellow-400">★</span>
+                                       <span class="ml-1 text-sm text-gray-300">${movie.vote_average.toFixed(1)}/10</span>
+                                   </div>`
+                                : ''
+                            }
+                        </div>
+                    </div>
+                `;
+            });
+        
+        html += '</div>';
+        content.innerHTML = html;
+        
+    } catch (error) {
+        content.innerHTML = `
+            <div class="text-center text-red-500 py-8">
+                <p>Une erreur est survenue lors du chargement de la filmographie.</p>
+                <button onclick="showActorFilmography(${actorId}, '${actorName}')" 
+                        class="mt-4 px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 transition-colors">
+                    Réessayer
+                </button>
+            </div>
+        `;
+    }
+}
+
+function hideFilmographyModal() {
+    const modal = document.getElementById('filmographyModal');
+    modal.classList.add('hidden');
+    document.body.style.overflow = 'auto';
+}
+
+// Fermer le modal en appuyant sur Echap
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        hideFilmographyModal();
+    }
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Fermer le modal en cliquant sur l'overlay
+    document.querySelector('#filmographyModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            hideFilmographyModal();
+        }
+    });
+});
 </script>
 @endsection 

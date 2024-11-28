@@ -17,4 +17,14 @@ class ActorController extends Controller
             'actor' => $actor
         ]);
     }
+
+    public function getFilmography($id)
+    {
+        $response = Http::withToken(config('services.tmdb.token'))
+            ->get("https://api.themoviedb.org/3/person/{$id}/movie_credits", [
+                'language' => 'fr-FR'
+            ]);
+
+        return $response->json();
+    }
 }

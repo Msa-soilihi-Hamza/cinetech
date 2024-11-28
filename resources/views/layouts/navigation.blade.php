@@ -12,16 +12,16 @@
 
                 <!-- Navigation Links (Desktop) -->
                 <div class="hidden space-x-8 sm:flex sm:ml-10">
-                    <x-nav-link :href="route('all.media')" :active="request()->routeIs('all.media')" class="text-purple-500 hover:text-purple-50">
+                    <x-nav-link :href="route('all.media')" :active="request()->routeIs('all.media')" class="text-purple-500 hover:text-purple-50" data-turbo-frame="content">
                         {{ __('Films & Séries') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" class="text-white hover:text-white">
+                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" class="text-white hover:text-white" data-turbo-frame="content">
                         {{ __('Films') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('tv.index')" :active="request()->routeIs('tv.*')" class="text-white hover:text-white">
+                    <x-nav-link :href="route('tv.index')" :active="request()->routeIs('tv.*')" class="text-white hover:text-white" data-turbo-frame="content">
                         {{ __('Séries') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('favorites.index')" :active="request()->routeIs('favorites.index')" class="text-white hover:text-white">
+                    <x-nav-link :href="route('favorites.index')" :active="request()->routeIs('favorites.index')" class="text-white hover:text-white" data-turbo-frame="content">
                         {{ __('Favoris') }}
                     </x-nav-link>
                 </div>
@@ -112,19 +112,23 @@
         <div class="hidden mobile:block desktop:hidden" id="mobile-menu">
             <div class="px-2 pt-2 pb-3 space-y-1">
                 <a href="{{ route('all.media') }}" 
-                   class="text-white hover:text-purple-500 block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('all.media') ? 'bg-purple-600' : '' }}">
+                   class="text-white hover:text-purple-500 block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('all.media') ? 'bg-purple-600' : '' }}"
+                   data-turbo-frame="content">
                     {{ __('Films & Séries') }}
                 </a>
                 <a href="{{ route('dashboard') }}" 
-                   class="text-white hover:text-purple-500 block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('dashboard') ? 'bg-purple-600' : '' }}">
+                   class="text-white hover:text-purple-500 block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('dashboard') ? 'bg-purple-600' : '' }}"
+                   data-turbo-frame="content">
                     {{ __('Films') }}
                 </a>
                 <a href="{{ route('tv.index') }}" 
-                   class="text-white hover:text-purple-500 block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('tv.*') ? 'bg-purple-600' : '' }}">
+                   class="text-white hover:text-purple-500 block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('tv.*') ? 'bg-purple-600' : '' }}"
+                   data-turbo-frame="content">
                     {{ __('Séries') }}
                 </a>
                 <a href="{{ route('favorites.index') }}" 
-                   class="text-white hover:text-purple-500 block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('favorites.index') ? 'bg-purple-600' : '' }}">
+                   class="text-white hover:text-purple-500 block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('favorites.index') ? 'bg-purple-600' : '' }}"
+                   data-turbo-frame="content">
                     {{ __('Favoris') }}
                 </a>
 
@@ -154,7 +158,6 @@
         </div>
     </div>
 </nav>
-
 <!-- Script pour le menu mobile -->
 <script>
 function toggleMobileMenu() {
@@ -170,3 +173,4 @@ window.addEventListener('resize', function() {
     }
 });
 </script>
+

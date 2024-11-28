@@ -10,12 +10,28 @@
 <body>
     @include('layouts.navigation')
 
-    <main>
-        @yield('content')
-    </main>
+    <turbo-frame id="content">
+        <main>
+            @yield('content')
+        </main>
+    </turbo-frame>
 
     @stack('scripts')
 
     <script src="{{ asset('js/favorites.js') }}"></script>
+    
+    <script>
+    // Gestion des états actifs des liens
+    document.addEventListener('turbo:load', function() {
+        const currentPath = window.location.pathname;
+        document.querySelectorAll('nav a').forEach(link => {
+            if (link.getAttribute('href') === currentPath) {
+                link.classList.add('active');
+            } else {
+                link.classList.remove('active');
+            }
+        });
+    });
+    </script>
 </body>
 </html>
