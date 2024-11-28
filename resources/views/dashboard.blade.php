@@ -3,15 +3,17 @@
 @section('content')
 <div class="min-h-screen bg-gray-900 py-8">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <!-- Navigation des sections -->
-        <div class="flex justify-center space-x-4 mb-8">
-            <a href="{{ route('dashboard', ['section' => 'popular']) }}" 
-               class="px-4 py-2 rounded-lg {{ $currentSection === 'popular' ? 'bg-purple-600 text-white' : 'bg-gray-800 text-gray-300 hover:bg-purple-600 hover:text-white' }}">
-                Films Populaires
-            </a>
-            <a href="{{ route('dashboard', ['section' => 'trending']) }}" 
-               class="px-4 py-2 rounded-lg {{ $currentSection === 'trending' ? 'bg-purple-600 text-white' : 'bg-gray-800 text-gray-300 hover:bg-purple-600 hover:text-white' }}">
-                Films Tendance
+        <!-- Filtres par genre -->
+        <div class="flex justify-center flex-wrap gap-2 mb-8">
+            @foreach($genres as $genre)
+                <a href="{{ route('dashboard', ['genre' => $genre['id']]) }}" 
+                   class="px-3 py-1 rounded-full text-sm {{ request('genre') == $genre['id'] ? 'bg-purple-600 text-white' : 'bg-gray-800 text-gray-300 hover:bg-purple-600 hover:text-white' }}">
+                    {{ $genre['name'] }}
+                </a>
+            @endforeach
+            <a href="{{ route('dashboard') }}" 
+               class="px-3 py-1 rounded-full text-sm {{ !request('genre') ? 'bg-purple-600 text-white' : 'bg-gray-800 text-gray-300 hover:bg-purple-600 hover:text-white' }}">
+                Tout voir
             </a>
         </div>
 
