@@ -62,22 +62,22 @@
                                 <h2 class="text-xl font-semibold mb-4">Distribution principale</h2>
                                 <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                                     @foreach(array_slice($movie['credits']['cast'], 0, 8) as $actor)
-                                        <div class="bg-gray-700 p-4 rounded-lg text-center hover:bg-gray-600 transition-colors cursor-pointer"
+                                        <div class="bg-gray-700  rounded-lg text-center hover:bg-gray-600 transition-colors cursor-pointer"
                                              onclick="showActorFilmography({{ $actor['id'] }}, '{{ $actor['name'] }}')">
-                                            @if(isset($actor['profile_path']))
-                                                <img src="https://image.tmdb.org/t/p/w185{{ $actor['profile_path'] }}"
-                                                     alt="{{ $actor['name'] }}"
-                                                     class="w-24 h-24 rounded-full mx-auto object-cover mb-3">
-                                            @else
-                                                <div class="w-24 h-24 rounded-full mx-auto mb-3 bg-gray-800 flex items-center justify-center">
-                                                    <span class="text-gray-400 text-3xl">?</span>
-                                                </div>
-                                            @endif
-                                            <p class="font-semibold">{{ $actor['name'] }}</p>
-                                            <p class="text-sm text-gray-400">{{ $actor['character'] }}</p>
-                                            @if(isset($actor['popularity']))
-                                                <p class="text-xs text-purple-400 mt-1">Popularité: {{ number_format($actor['popularity'], 1) }}</p>
-                                            @endif
+                                            <div class="relative w-32 h-32 mx-auto mb-3">
+                                                @if(isset($actor['profile_path']))
+                                                    <img src="https://image.tmdb.org/t/p/w185{{ $actor['profile_path'] }}"
+                                                         alt="{{ $actor['name'] }}"
+                                                         class="w-full h-full  object-cover object-center shadow-lg">
+                                                @else
+                                                    <div class="w-full h-full rounded-full bg-gray-800 flex items-center justify-center">
+                                                        <span class="text-gray-400 text-3xl">?</span>
+                                                    </div>
+                                                @endif
+                                            </div>
+                                            <p class="font-semibold truncate">{{ $actor['name'] }}</p>
+                                            <p class="text-sm text-gray-400 truncate">{{ $actor['character'] }}</p>
+                                           
                                         </div>
                                     @endforeach
                                 </div>
@@ -120,13 +120,19 @@
                                                     @foreach($movie['credits']['cast'] as $actor)
                                                         <div class="bg-gray-700 p-4 rounded-lg hover:bg-gray-600 transition-colors cursor-pointer"
                                                              onclick="showActorFilmography({{ $actor['id'] }}, '{{ $actor['name'] }}')">
-                                                            @if(isset($actor['profile_path']))
-                                                                <img src="https://image.tmdb.org/t/p/w185{{ $actor['profile_path'] }}"
-                                                                     alt="{{ $actor['name'] }}"
-                                                                     class="w-20 h-20 rounded-full mx-auto object-cover mb-3">
-                                                            @endif
-                                                            <p class="font-semibold">{{ $actor['name'] }}</p>
-                                                            <p class="text-sm text-gray-400">{{ $actor['character'] }}</p>
+                                                            <div class="relative w-28 h-28 mx-auto mb-3">
+                                                                @if(isset($actor['profile_path']))
+                                                                    <img src="https://image.tmdb.org/t/p/w185{{ $actor['profile_path'] }}"
+                                                                         alt="{{ $actor['name'] }}"
+                                                                         class="w-full h-full rounded-full object-cover object-center shadow-lg">
+                                                                @else
+                                                                    <div class="w-full h-full rounded-full bg-gray-800 flex items-center justify-center">
+                                                                        <span class="text-gray-400 text-3xl">?</span>
+                                                                    </div>
+                                                                @endif
+                                                            </div>
+                                                            <p class="font-semibold truncate">{{ $actor['name'] }}</p>
+                                                            <p class="text-sm text-gray-400 truncate">{{ $actor['character'] }}</p>
                                                             @if(isset($actor['known_for_department']))
                                                                 <p class="text-xs text-purple-400 mt-1">{{ $actor['known_for_department'] }}</p>
                                                             @endif
