@@ -3,19 +3,22 @@
 @section('content')
 <div class="min-h-screen bg-gray-900 py-8">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <x-aos-wrapper animation="fade-down">
+        <x-aos-wrapper animation="fade-down" duration="800">
             <h1 class="text-3xl font-bold text-white mb-8">Films</h1>
         </x-aos-wrapper>
         
-        <x-aos-wrapper animation="fade-up" duration="1200">
+        <x-aos-wrapper animation="fade-up" duration="800">
             <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 mb-12">
                 @foreach($movies as $movie)
-                    <div class="bg-gray-800 rounded-lg overflow-hidden shadow-lg transition-transform hover:scale-105">
+                    <div class="bg-gray-800 rounded-lg overflow-hidden shadow-lg transition-transform hover:scale-105"
+                         data-aos="fade-up"
+                         data-aos-duration="600"
+                         data-aos-delay="{{ $loop->index * 50 }}">
                         <a href="{{ route('movies.show', $movie['id']) }}">
                             @if($movie['poster_path'])
                                 <img src="https://image.tmdb.org/t/p/w500{{ $movie['poster_path'] }}"
                                      alt="{{ $movie['title'] }}"
-                                     class="w-full h-100px object-cover">
+                                     class="w-full h-[300px] object-cover">
                             @endif
                         </a>
                         
@@ -36,19 +39,22 @@
             </div>
         </x-aos-wrapper>
 
-        <x-aos-wrapper animation="fade-down">
+        <x-aos-wrapper animation="fade-down" duration="800">
             <h1 class="text-3xl font-bold text-white mb-8">Séries TV</h1>
         </x-aos-wrapper>
         
-        <x-aos-wrapper animation="fade-up" duration="1200">
+        <x-aos-wrapper animation="fade-up" duration="800">
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 @foreach($tvShows as $tvShow)
-                    <div class="bg-gray-800 rounded-lg overflow-hidden shadow-lg transition-transform hover:scale-105">
+                    <div class="bg-gray-800 rounded-lg overflow-hidden shadow-lg transition-transform hover:scale-105"
+                         data-aos="fade-up"
+                         data-aos-duration="600"
+                         data-aos-delay="{{ $loop->index * 50 }}">
                         <a href="{{ route('tv.show', $tvShow['id']) }}">
                             @if($tvShow['poster_path'])
                                 <img src="https://image.tmdb.org/t/p/w500{{ $tvShow['poster_path'] }}"
                                      alt="{{ $tvShow['name'] }}"
-                                     class="w-full h-100px object-cover">
+                                     class="w-full h-[300px] object-cover">
                             @endif
                         </a>
                         
