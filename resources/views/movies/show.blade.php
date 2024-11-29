@@ -68,9 +68,9 @@
                                                 @if(isset($actor['profile_path']))
                                                     <img src="https://image.tmdb.org/t/p/w185{{ $actor['profile_path'] }}"
                                                          alt="{{ $actor['name'] }}"
-                                                         class="w-full h-full  object-cover object-center shadow-lg">
+                                                         class="w-full h-full rounded-lg object-cover object-center shadow-lg">
                                                 @else
-                                                    <div class="w-full h-full rounded-full bg-gray-800 flex items-center justify-center">
+                                                    <div class="w-full h-full rounded-lg bg-gray-800 flex items-center justify-center">
                                                         <span class="text-gray-400 text-3xl">?</span>
                                                     </div>
                                                 @endif
@@ -124,9 +124,9 @@
                                                                 @if(isset($actor['profile_path']))
                                                                     <img src="https://image.tmdb.org/t/p/w185{{ $actor['profile_path'] }}"
                                                                          alt="{{ $actor['name'] }}"
-                                                                         class="w-full h-full rounded-full object-cover object-center shadow-lg">
+                                                                         class="w-full h-full rounded-lg object-cover object-center shadow-lg">
                                                                 @else
-                                                                    <div class="w-full h-full rounded-full bg-gray-800 flex items-center justify-center">
+                                                                    <div class="w-full h-full rounded-lg bg-gray-800 flex items-center justify-center">
                                                                         <span class="text-gray-400 text-3xl">?</span>
                                                                     </div>
                                                                 @endif
