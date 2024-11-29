@@ -29,28 +29,14 @@ class DashboardController extends Controller
         });
     }
 
-    public function index(Request $request)
+    private function fetchMovies($genre = null)
     {
         try {
-            $currentPage = $request->get('page', 1);
-            $genre = $request->get('genre');
-            $perPage = 20;
-
-            $genres = $this->getGenres();
-
-            if (empty($genres)) {
-                return view('dashboard', [
-                    'movies' => [],
-                    'genres' => [],
-                    'error' => 'Impossible de charger les genres.'
-                ]);
-            }
-
             $params = [
                 'api_key' => env('TMDB_API_KEY'),
                 'language' => 'fr-FR',
-                'page' => $currentPage,
-                'sort_by' => 'popularity.desc'
+                'sort_by' => 'popularity.desc',
+                'page' => request('page', 1)
             ];
 
             if ($genre) {
@@ -62,43 +48,32 @@ class DashboardController extends Controller
 
             if ($response->successful()) {
                 $data = $response->json();
-                
-                $paginator = new LengthAwarePaginator(
+                return new LengthAwarePaginator(
                     $data['results'],
                     $data['total_results'],
                     20,
-                    $currentPage,
-                    ['path' => route('dashboard'), 'query' => array_filter([
-                        'genre' => $genre
-                    ])]
+                    request('page', 1),
+                    ['path' => route('dashboard'), 'query' => array_filter(['genre' => $genre])]
                 );
-
-                if ($request->ajax()) {
-                    return view('components.movies-grid', [
-                        'movies' => $paginator
-                    ])->render();
-                }
-
-                return view('dashboard', [
-                    'movies' => $paginator,
-                    'genres' => $genres,
-                    'currentGenre' => $genre
-                ]);
             }
 
-            return view('dashboard', [
-                'movies' => [],
-                'genres' => $genres,
-                'error' => 'Erreur lors de la récupération des films.'
-            ]);
-
+            return collect();
         } catch (\Exception $e) {
-            \Log::error('Erreur dans DashboardController@index: ' . $e->getMessage());
-            return view('dashboard', [
-                'movies' => [],
-                'genres' => [],
-                'error' => 'Une erreur est survenue lors de la récupération des films.'
-            ]);
+            \Log::error('Erreur lors de la récupération des films: ' . $e->getMessage());
+            return collect();
         }
+    }
+
+    public function index(Request $request)
+    {
+        $genres = $this->getGenres();
+        $selectedGenre = $request->genre;
+        $movies = $this->fetchMovies($selectedGenre);
+
+        if ($request->ajax()) {
+            return view('movies._filtered-grid', compact('movies'))->render();
+        }
+
+        return view('dashboard', compact('genres', 'movies'));
     }
 } 

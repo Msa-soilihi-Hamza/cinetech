@@ -18,9 +18,22 @@
                 }
                 
                 const html = await response.text();
-                document.querySelector('.shows-grid').innerHTML = html;
+                document.querySelector('.shows-grid .grid').innerHTML = html;
                 
-                // Mettre à jour l'URL sans recharger la page
+                // Forcer une réinitialisation complète de AOS
+                AOS.refreshHard();
+                
+                // Réinitialiser les attributs AOS sur les nouveaux éléments
+                document.querySelectorAll('[data-aos]').forEach(el => {
+                    el.setAttribute('data-aos-delay', '0');
+                    el.removeAttribute('data-aos-animate');
+                });
+                
+                // Réinitialiser AOS après un court délai pour s'assurer que le DOM est mis à jour
+                setTimeout(() => {
+                    AOS.refresh();
+                }, 100);
+                
                 window.history.pushState({}, '', `/tv${genreId ? `?genre=${genreId}` : ''}`);
             } catch (error) {
                 console.error('Erreur lors du filtrage:', error);
@@ -28,28 +41,30 @@
         }
      }">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <!-- Filtres par genre -->
-        <div class="flex justify-center flex-wrap gap-2 mb-8">
-            @foreach($genres as $genre)
+        <x-aos-wrapper animation="fade-down" duration="800">
+            <div class="flex justify-center flex-wrap gap-2 mb-8">
+                @foreach($genres as $genre)
+                    <button 
+                        @click="filterShows('{{ $genre['id'] }}')"
+                        :class="selectedGenre === '{{ $genre['id'] }}' ? 'bg-purple-600 text-white' : 'bg-gray-800 text-gray-300 hover:bg-purple-600 hover:text-white'"
+                        class="px-3 py-1 rounded-full text-sm">
+                        {{ $genre['name'] }}
+                    </button>
+                @endforeach
                 <button 
-                    @click="filterShows('{{ $genre['id'] }}')"
-                    :class="selectedGenre === '{{ $genre['id'] }}' ? 'bg-purple-600 text-white' : 'bg-gray-800 text-gray-300 hover:bg-purple-600 hover:text-white'"
+                    @click="filterShows('')"
+                    :class="!selectedGenre ? 'bg-purple-600 text-white' : 'bg-gray-800 text-gray-300 hover:bg-purple-600 hover:text-white'"
                     class="px-3 py-1 rounded-full text-sm">
-                    {{ $genre['name'] }}
+                    Tout voir
                 </button>
-            @endforeach
-            <button 
-                @click="filterShows('')"
-                :class="!selectedGenre ? 'bg-purple-600 text-white' : 'bg-gray-800 text-gray-300 hover:bg-purple-600 hover:text-white'"
-                class="px-3 py-1 rounded-full text-sm">
-                Tout voir
-            </button>
-        </div>
+            </div>
+        </x-aos-wrapper>
 
-        <!-- Grille de séries -->
-        <div class="shows-grid">
-            <x-shows-grid :shows="$shows" />
-        </div>
+        <x-aos-wrapper animation="fade-up" duration="800">
+            <div class="shows-grid">
+                <x-shows-grid :shows="$shows" />
+            </div>
+        </x-aos-wrapper>
     </div>
 </div>
 @endsection 
