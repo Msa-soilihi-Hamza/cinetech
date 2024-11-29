@@ -1,7 +1,40 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="min-h-screen bg-gray-900 py-8"
+<style>
+    .animated-bg {
+        background: linear-gradient(180deg, #111827, #111827, #132241);
+        background-size: 100% 600%;
+
+        -webkit-animation: AnimationName 10s ease infinite;
+        -moz-animation: AnimationName 10s ease infinite;
+        -o-animation: AnimationName 10s ease infinite;
+        animation: AnimationName 10s ease infinite;
+    }
+
+    @-webkit-keyframes AnimationName {
+        0%{background-position:50% 0%}
+        50%{background-position:50% 100%}
+        100%{background-position:50% 0%}
+    }
+    @-moz-keyframes AnimationName {
+        0%{background-position:50% 0%}
+        50%{background-position:50% 100%}
+        100%{background-position:50% 0%}
+    }
+    @-o-keyframes AnimationName {
+        0%{background-position:50% 0%}
+        50%{background-position:50% 100%}
+        100%{background-position:50% 0%}
+    }
+    @keyframes AnimationName {
+        0%{background-position:50% 0%}
+        50%{background-position:50% 100%}
+        100%{background-position:50% 0%}
+    }
+</style>
+
+<div class="min-h-screen animated-bg py-8"
      x-data="{ 
         selectedGenre: '{{ request('genre') }}',
         async filterMovies(genreId) {

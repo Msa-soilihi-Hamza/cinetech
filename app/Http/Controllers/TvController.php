@@ -9,14 +9,27 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 class TvController extends Controller
 {
+    private $genres = [
+        'action' => 10759,         // Action & Adventure uniquement
+        'animation' => 16,         // Animation
+        'comedie' => 35,          // Comédie
+        'crime' => '80,9648',     // Crime & Mystère combinés
+        'documentaire' => 99,     // Documentaire
+        'drame' => 18,            // Drame
+        'famille' => 10751,       // Famille
+        'kids' => 10762,          // Kids
+        'mystere' => 9648,        // Mystère
+        'news' => 10763,          // News
+        'reality' => 10764,       // Reality
+        'sf_fantastique' => 10765, // Science-Fiction & Fantastique
+        'soap' => 10766,          // Soap
+        'talk' => 10767,          // Talk
+        'guerre_politique' => 10768, // Guerre & Politique
+        'western' => 37           // Western
+    ];
+
     public function index(Request $request)
     {
-        $genres = Cache::remember('tv_genres', 3600, function () {
-            return Http::withToken(config('services.tmdb.token'))
-                ->get('https://api.themoviedb.org/3/genre/tv/list')
-                ->json()['genres'];
-        });
-
         $selectedGenre = $request->genre;
         $shows = $this->fetchShows($selectedGenre);
 
@@ -24,41 +37,142 @@ class TvController extends Controller
             return view('tv._filtered-grid', compact('shows'))->render();
         }
 
-        return view('tv.index', compact('genres', 'shows'));
+        return view('tv.index', [
+            'shows' => $shows,
+            'genres' => $this->genres
+        ]);
     }
 
     private function fetchShows($genre = null)
     {
-        try {
-            $params = [
-                'api_key' => env('TMDB_API_KEY'),
-                'language' => 'fr-FR',
-                'sort_by' => 'popularity.desc',
-                'page' => request('page', 1)
-            ];
+        $page = request('page', 1);
+        $cacheKey = 'tv_genre_' . ($genre ?? 'all') . '_page_' . $page;
 
-            if ($genre) {
-                $params['with_genres'] = $genre;
+        // Effacer le cache pour ce genre spécifique
+        Cache::forget($cacheKey);
+
+        return Cache::remember($cacheKey, 3600, function () use ($genre, $page) {
+            try {
+                $params = [
+                    'api_key' => env('TMDB_API_KEY'),
+                    'page' => $page,
+                    'language' => 'fr-FR',
+                    'sort_by' => 'popularity.desc',
+                    'include_adult' => false,
+                    'include_null_first_air_dates' => false,
+                    'vote_count.gte' => 10
+                ];
+
+                if ($genre === '') {
+                    $endpoint = 'tv/popular';
+                } elseif ($genre && isset($this->genres[$genre])) {
+                    $endpoint = 'discover/tv';
+                    
+                    // Traitement spécial pour le genre action
+                    if ($genre === 'action') {
+                        $params['with_genres'] = 10759; // Action & Adventure
+                        $params['sort_by'] = 'popularity.desc';
+                        $params['vote_count.gte'] = 50;
+                        $params['vote_average.gte'] = 7;
+                    } else {
+                        $params['with_genres'] = $this->genres[$genre];
+                    }
+                    
+                    // Ajuster les paramètres selon le genre
+                    if ($genre === 'documentaire') {
+                        $params['sort_by'] = 'vote_average.desc';
+                        $params['vote_count.gte'] = 5;
+                    } elseif ($genre === 'animation') {
+                        $params['with_keywords'] = '210024|287501';
+                    }
+                } else {
+                    $endpoint = 'tv/popular';
+                }
+
+                \Log::info('Requête API TMDB:', [
+                    'endpoint' => $endpoint,
+                    'genre' => $genre,
+                    'params' => array_merge($params, ['api_key' => '***'])
+                ]);
+
+                $response = Http::withOptions(['verify' => false])
+                    ->get('https://api.themoviedb.org/3/' . $endpoint, $params);
+
+                if ($response->successful()) {
+                    $data = $response->json();
+                    
+                    // Filtrer les résultats pour ne garder que les séries valides
+                    $results = collect($data['results'])->filter(function ($item) {
+                        return isset($item['first_air_date']) && 
+                               isset($item['name']) && 
+                               isset($item['vote_average']) &&
+                               !empty($item['poster_path']);
+                    });
+
+                    // Log du nombre de résultats
+                    \Log::info('Résultats trouvés:', [
+                        'genre' => $genre,
+                        'total' => count($results),
+                        'total_original' => $data['total_results']
+                    ]);
+
+                    if ($results->isEmpty() && $genre === '') {
+                        return $this->fetchPopularShows($page);
+                    }
+
+                    return new LengthAwarePaginator(
+                        $results->all(),
+                        $data['total_results'],
+                        20,
+                        $page,
+                        [
+                            'path' => route('tv.index'),
+                            'query' => array_filter(['genre' => $genre])
+                        ]
+                    );
+                }
+
+                throw new \Exception('API request failed: ' . $response->status());
+            } catch (\Exception $e) {
+                \Log::error('Error fetching TV shows: ' . $e->getMessage());
+                return new LengthAwarePaginator([], 0, 20, 1);
             }
+        });
+    }
 
-            $response = Http::withOptions(['verify' => false])
-                ->get('https://api.themoviedb.org/3/discover/tv', $params);
+    private function fetchPopularShows($page)
+    {
+        $params = [
+            'api_key' => env('TMDB_API_KEY'),
+            'page' => $page,
+            'language' => 'fr-FR',
+            'sort_by' => 'popularity.desc',
+            'vote_count.gte' => 10
+        ];
 
-            if ($response->successful()) {
-                $data = $response->json();
-                return new LengthAwarePaginator(
-                    $data['results'],
-                    $data['total_results'],
-                    20,
-                    request('page', 1),
-                    ['path' => route('tv.index'), 'query' => array_filter(['genre' => $genre])]
-                );
-            }
+        $response = Http::withOptions(['verify' => false])
+            ->get('https://api.themoviedb.org/3/discover/tv', $params);
 
-            return collect();
-        } catch (\Exception $e) {
-            \Log::error('Erreur lors de la récupération des séries: ' . $e->getMessage());
-            return collect();
+        if ($response->successful()) {
+            $data = $response->json();
+            $results = collect($data['results'])->filter(function ($item) {
+                return isset($item['first_air_date']) && 
+                       isset($item['name']) && 
+                       isset($item['vote_average']) &&
+                       !empty($item['poster_path']);
+            });
+
+            return new LengthAwarePaginator(
+                $results->all(),
+                $data['total_results'],
+                20,
+                $page,
+                [
+                    'path' => route('tv.index')
+                ]
+            );
         }
+
+        return new LengthAwarePaginator([], 0, 20, 1);
     }
 } 
