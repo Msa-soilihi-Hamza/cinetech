@@ -14,5 +14,8 @@
         "postcss": "^8.x.x",
         "tailwindcss": "^3.x.x",
         "vite": "^4.0.0"
+    },
+    "dependencies": {
+        "@hotwired/turbo": "^8.0.12"
     }
 }

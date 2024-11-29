@@ -1,5 +1,5 @@
 import './bootstrap';
-import '@hotwired/turbo';
+// import '@hotwired/turbo';  // Commenté temporairement
 import './search';
 import './favorites';
 
