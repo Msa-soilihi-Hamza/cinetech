@@ -64,11 +64,11 @@
                                     @foreach(array_slice($movie['credits']['cast'], 0, 8) as $actor)
                                         <div class="bg-gray-700  rounded-lg text-center hover:bg-gray-600 transition-colors cursor-pointer"
                                              onclick="showActorFilmography({{ $actor['id'] }}, '{{ $actor['name'] }}')">
-                                            <div class="relative w-32 h-32 mx-auto mb-3">
+                                            <div class="relative w-42 h-43 mx-auto mb-3">
                                                 @if(isset($actor['profile_path']))
                                                     <img src="https://image.tmdb.org/t/p/w185{{ $actor['profile_path'] }}"
                                                          alt="{{ $actor['name'] }}"
-                                                         class="w-full h-full rounded-lg object-cover object-center shadow-lg">
+                                                         class="w-full h-full  object-cover">
                                                 @else
                                                     <div class="w-full h-full rounded-lg bg-gray-800 flex items-center justify-center">
                                                         <span class="text-gray-400 text-3xl">?</span>
