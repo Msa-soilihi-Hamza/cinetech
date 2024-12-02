@@ -80,14 +80,14 @@
                     <button 
                         @click="filterMovies('{{ $genre['id'] }}')"
                         :class="selectedGenre === '{{ $genre['id'] }}' ? 'bg-purple-600 text-white' : 'bg-gray-800 text-gray-300 hover:bg-purple-600 hover:text-white'"
-                        class="px-3 py-1 rounded-full text-sm">
+                        class="px-4 py-2 rounded-full text-sm">
                         {{ $genre['name'] }}
                     </button>
                 @endforeach
                 <button 
                     @click="filterMovies('')"
                     :class="!selectedGenre ? 'bg-purple-600 text-white' : 'bg-gray-800 text-gray-300 hover:bg-purple-600 hover:text-white'"
-                    class="px-3 py-1 rounded-full text-sm">
+                    class="px-4 py-2 rounded-full text-sm">
                     Tout voir
                 </button>
             </div>
