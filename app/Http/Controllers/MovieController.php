@@ -30,11 +30,22 @@ class MovieController extends Controller
     public function show($id)
     {
         try {
-            // Récupération des détails du film depuis l'API
+            // Récupération des détails du film
             $movieDetails = $this->tmdbService->getMovie($id);
+
+            // Récupération des vidéos (bandes-annonces)
+            $videos = $this->tmdbService->getMovieVideos($id);
+            
+            // Filtrer pour obtenir uniquement les bandes-annonces YouTube en français ou en anglais
+            $trailers = collect($videos)->filter(function($video) {
+                return $video['site'] === 'YouTube' 
+                    && ($video['type'] === 'Trailer' || $video['type'] === 'Teaser')
+                    && in_array($video['iso_639_1'], ['fr', 'en']);
+            })->values();
 
             // Debug pour vérifier les données
             \Log::info('Movie Details:', ['movie' => $movieDetails]);
+            \Log::info('Trailers:', ['trailers' => $trailers]);
 
             // Récupération des commentaires
             $comments = Comment::where('media_type', 'movie')
@@ -44,11 +55,9 @@ class MovieController extends Controller
                 ->orderBy('created_at', 'desc')
                 ->get();
 
-            // Debug pour vérifier les commentaires
-            \Log::info('Comments:', ['comments' => $comments]);
-
             return view('movies.show', [
                 'movie' => $movieDetails,
+                'trailers' => $trailers, // Ajout des bandes-annonces
                 'comments' => $comments,
                 'mediaType' => 'movie',
                 'mediaId' => $id

@@ -147,37 +147,40 @@
                         @endif
 
                         <div class="mt-8">
-                            <h2 class="text-2xl font-semibold text-gray-200 mb-4">Bande Annonce</h2>
-                            @if(isset($movie['videos']) && !empty($movie['videos']['results']))
+                            <h2 class="text-2xl font-semibold text-gray-200 mb-4">Bandes Annonces</h2>
+                            @if(isset($movie['videos']['results']) && !empty($movie['videos']['results']))
                                 @php
-                                    // Cherche d'abord une bande-annonce en français
-                                    $trailer = collect($movie['videos']['results'])->first(function($video) {
-                                        return $video['type'] === 'Trailer' && $video['site'] === 'YouTube' && $video['iso_639_1'] === 'fr';
+                                    $trailers = collect($movie['videos']['results'])->filter(function($video) {
+                                        return $video['site'] === 'YouTube' 
+                                            && ($video['type'] === 'Trailer' || $video['type'] === 'Teaser')
+                                            && in_array($video['iso_639_1'], ['fr', 'en']);
                                     });
-                                    
-                                    // Si pas de bande-annonce en français, prend la première disponible
-                                    if (!$trailer) {
-                                        $trailer = collect($movie['videos']['results'])->first(function($video) {
-                                            return $video['type'] === 'Trailer' && $video['site'] === 'YouTube';
-                                        });
-                                    }
                                 @endphp
                                 
-                                @if($trailer)
-                                <div class="aspect-w-16 aspect-h-9">
-                                    <iframe 
-                                            src="https://www.youtube.com/embed/{{ $trailer['key'] }}" 
-                                        frameborder="0" 
-                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                                        allowfullscreen
-                                        class="w-full"
-                                    ></iframe>
+                            @if($trailers->isNotEmpty())
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    @foreach($trailers as $trailer)
+                                        <div class="aspect-w-16 aspect-h-9 bg-gray-700 rounded-lg overflow-hidden">
+                                            <iframe 
+                                                src="https://www.youtube.com/embed/{{ $trailer['key'] }}" 
+                                                frameborder="0" 
+                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                                allowfullscreen
+                                                class="w-full h-full rounded-lg"
+                                                loading="lazy">
+                                            </iframe>
+                                        </div>
+                                    @endforeach
                                 </div>
                                 @else
-                                    <p class="text-gray-400">Aucune bande annonce disponible</p>
+                                    <div class="bg-gray-700 rounded-lg p-4">
+                                        <p class="text-gray-400 text-center">Aucune bande annonce disponible</p>
+                                    </div>
                                 @endif
                             @else
-                                <p class="text-gray-400">Aucune bande annonce disponible</p>
+                                <div class="bg-gray-700 rounded-lg p-4">
+                                    <p class="text-gray-400 text-center">Aucune bande annonce disponible</p>
+                                </div>
                             @endif
                         </div>
                     </div>

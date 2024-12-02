@@ -44,28 +44,37 @@ class HomeController extends Controller
 
     public function showMovie($id)
     {
-        $response = Http::withOptions([
-            'verify' => false
-        ])
-        ->get("https://api.themoviedb.org/3/movie/{$id}", [
-            'api_key' => env('TMDB_API_KEY'),
-            'append_to_response' => 'credits',
-            'language' => 'fr-FR'
-        ]);
+        try {
+            // Récupération des détails du film
+            $movieDetails = $this->tmdbService->getMovie($id);
 
-        if (!$response->successful()) {
-            abort(404);
+            // Récupération des vidéos (bandes-annonces)
+            $videos = $this->tmdbService->getMovieVideos($id);
+            
+            // Filtrer pour obtenir uniquement les bandes-annonces YouTube en français ou en anglais
+            $trailers = collect($videos)->filter(function($video) {
+                return $video['site'] === 'YouTube' 
+                    && ($video['type'] === 'Trailer' || $video['type'] === 'Teaser')
+                    && in_array($video['iso_639_1'], ['fr', 'en']);
+            })->values();
+
+            // Récupération des commentaires
+            $comments = Comment::where('media_type', 'movie')
+                ->where('media_id', $id)
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+            return view('movies.show', [
+                'movie' => $movieDetails,
+                'trailers' => $trailers, // Ajout des bandes-annonces
+                'comments' => $comments,
+                'mediaType' => 'movie',
+                'mediaId' => $id
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Erreur dans HomeController@showMovie: ' . $e->getMessage());
+            return back()->with('error', 'Une erreur est survenue.');
         }
-
-        $movie = $response->json();
-        
-        $comments = Comment::where('media_type', 'movie')
-                          ->where('media_id', $id)
-                          ->with(['user', 'replies.user'])
-                          ->orderBy('created_at', 'desc')
-                          ->get();
-
-        return view('movies.show', compact('movie', 'comments'));
     }
 
     public function showTVShow($id)

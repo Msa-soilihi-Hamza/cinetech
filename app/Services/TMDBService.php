@@ -117,4 +117,37 @@ class TMDBService
 
         return $response->json();
     }
+
+    public function getMovieVideos($movieId)
+    {
+        $response = Http::withoutVerifying()
+            ->get("{$this->baseUrl}/movie/{$movieId}/videos", [
+                'api_key' => $this->apiKey,
+                'language' => 'fr-FR'
+            ]);
+
+        return $response->json()['results'] ?? [];
+    }
+
+    public function getMovie($movieId)
+    {
+        try {
+            $response = Http::withoutVerifying()
+                ->get("{$this->baseUrl}/movie/{$movieId}", [
+                    'api_key' => $this->apiKey,
+                    'language' => 'fr-FR',
+                    'append_to_response' => 'credits,videos'
+                ]);
+
+            if ($response->successful()) {
+                return $response->json();
+            }
+
+            throw new \Exception('Erreur lors de la récupération des détails du film');
+
+        } catch (\Exception $e) {
+            \Log::error('Erreur TMDBService@getMovie: ' . $e->getMessage());
+            throw $e;
+        }
+    }
 } 
