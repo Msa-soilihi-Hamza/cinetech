@@ -3,10 +3,10 @@
 @section('content')
 <!-- Hero Section avec Splide -->
 <div class="splide relative bg-gray-900" id="main-slider">
-    <div class="splide__track">
+    <div class="splide__track h-screen">
         <div class="splide__list">
             <!-- Slide 1 - Les Gardiens de la Galaxie -->
-            <div class="splide__slide relative h-[110vh]">
+            <div class="splide__slide relative h-[calc(100vh-4rem)]">
                 <div class="absolute inset-0">
                     <img src="https://image.tmdb.org/t/p/original/5YZbUmjbMa3ClvSW1Wj3D6XGolb.jpg" 
                          alt="Guardians of the Galaxy Banner" 
@@ -36,7 +36,7 @@
             </div>
 
             <!-- Slide 2 - Super Mario Bros -->
-            <div class="splide__slide relative h-[110vh]">
+            <div class="splide__slide relative h-[calc(100vh-4rem)]">
                 <div class="absolute inset-0">
                     <img src="https://image.tmdb.org/t/p/original/9n2tJBplPbgR2ca05hS5CKXwP2c.jpg" 
                          alt="Super Mario Bros Banner" 
@@ -66,7 +66,7 @@
             </div>
 
             <!-- Slide 3 - Avatar 2 -->
-            <div class="splide__slide relative h-[110vh]">
+            <div class="splide__slide relative h-[calc(100vh-4rem)]">
                 <div class="absolute inset-0">
                     <img src="https://image.tmdb.org/t/p/original/198vrF8k7mfQ4FjDJsBmdQcaiyq.jpg" 
                          alt="Avatar 2 Banner" 
@@ -119,13 +119,13 @@ document.addEventListener('DOMContentLoaded', function() {
 @endpush
 
 <!-- Contenu existant -->
-<div class="min-h-screen bg-gray-900 py-8">
+<div class="bg-gray-900 pt-2">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <x-aos-wrapper animation="fade-down" duration="800">
-            <h1 class="text-3xl font-bold text-white mb-8">Films</h1>
+            <h1 class="text-3xl font-bold text-white mb-6">Films</h1>
         </x-aos-wrapper>
         
-        <div class="mb-12">
+        <div class="mb-8">
             @if(!empty($movies))
                 <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
                     @foreach(array_chunk($movies->toArray(), 8) as $chunkIndex => $chunk)
@@ -218,5 +218,17 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+@endpush
+
+@push('styles')
+<style>
+.splide__track {
+    height: calc(100vh - 4rem) !important;
+}
+
+.splide__list {
+    height: 100% !important;
+}
+</style>
 @endpush
 @endsection 
