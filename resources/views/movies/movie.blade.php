@@ -18,7 +18,7 @@
                             @if($movie['poster_path'])
                                 <img src="https://image.tmdb.org/t/p/w500{{ $movie['poster_path'] }}"
                                      alt="{{ $movie['title'] }}"
-                                     class="w-full h-[400px] object-cover">
+                                     class="w-full h-100px object-cover">
                             @endif
                         </a>
                         
@@ -54,7 +54,7 @@
                             @if($tvShow['poster_path'])
                                 <img src="https://image.tmdb.org/t/p/w500{{ $tvShow['poster_path'] }}"
                                      alt="{{ $tvShow['name'] }}"
-                                     class="w-full h-[400px] object-cover">
+                                     class="w-full h-100px object-cover">
                             @endif
                         </a>
                         
