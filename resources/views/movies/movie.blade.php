@@ -107,7 +107,7 @@ document.addEventListener('DOMContentLoaded', function() {
         autoplay: true,
         interval: 5000,
         arrows: true,
-        pagination: true,
+        pagination: false,
         video: {
             loop: true,
         },
@@ -228,6 +228,26 @@ document.addEventListener('DOMContentLoaded', function() {
 
 .splide__list {
     height: 100% !important;
+}
+
+/* Styles pour les flèches de navigation */
+.splide__arrow {
+    background: rgba(255, 255, 255, 0.3) !important;
+    width: 3em !important;
+    height: 3em !important;
+    opacity: 0.7;
+    transition: all 0.3s ease;
+}
+
+.splide__arrow:hover {
+    background: rgba(255, 255, 255, 0.5) !important;
+    opacity: 1;
+}
+
+.splide__arrow svg {
+    width: 1.5em !important;
+    height: 1.5em !important;
+    fill: #fff !important;
 }
 </style>
 @endpush
