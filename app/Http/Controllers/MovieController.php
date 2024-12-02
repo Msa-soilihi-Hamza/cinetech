@@ -20,10 +20,11 @@ class MovieController extends Controller
         $movies = $this->tmdbService->getTrendingMovies();
         $tvShows = $this->tmdbService->getTrendingTVShows();
 
-        return view('movies.movie', [
-            'movies' => $movies,
-            'tvShows' => $tvShows
-        ]);
+        // Convertir les tableaux en collections
+        $movies = collect($movies);
+        $tvShows = collect($tvShows);
+
+        return view('movies.movie', compact('movies', 'tvShows'));
     }
 
     public function show($id)
