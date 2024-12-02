@@ -145,6 +145,41 @@
                                 @endif
                             </div>
                         @endif
+
+                        <div class="mt-8">
+                            <h2 class="text-2xl font-semibold text-gray-200 mb-4">Bande Annonce</h2>
+                            @if(isset($movie['videos']) && !empty($movie['videos']['results']))
+                                @php
+                                    // Cherche d'abord une bande-annonce en français
+                                    $trailer = collect($movie['videos']['results'])->first(function($video) {
+                                        return $video['type'] === 'Trailer' && $video['site'] === 'YouTube' && $video['iso_639_1'] === 'fr';
+                                    });
+                                    
+                                    // Si pas de bande-annonce en français, prend la première disponible
+                                    if (!$trailer) {
+                                        $trailer = collect($movie['videos']['results'])->first(function($video) {
+                                            return $video['type'] === 'Trailer' && $video['site'] === 'YouTube';
+                                        });
+                                    }
+                                @endphp
+                                
+                                @if($trailer)
+                                <div class="aspect-w-16 aspect-h-9">
+                                    <iframe 
+                                            src="https://www.youtube.com/embed/{{ $trailer['key'] }}" 
+                                        frameborder="0" 
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                        allowfullscreen
+                                        class="w-full"
+                                    ></iframe>
+                                </div>
+                                @else
+                                    <p class="text-gray-400">Aucune bande annonce disponible</p>
+                                @endif
+                            @else
+                                <p class="text-gray-400">Aucune bande annonce disponible</p>
+                            @endif
+                        </div>
                     </div>
                 </div>
             </div>

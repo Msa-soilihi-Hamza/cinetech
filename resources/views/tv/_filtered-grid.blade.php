@@ -18,7 +18,7 @@
                     @if($show['poster_path'])
                         <img src="https://image.tmdb.org/t/p/w500{{ $show['poster_path'] }}" 
                              alt="{{ $show['name'] }}"
-                             class="w-full h-[300px] object-cover">
+                             class="w-full h-[400px] object-cover">
                     @endif
                 </a>
                 

@@ -26,7 +26,7 @@
                             @if($favorite['poster_path'])
                                 <img src="https://image.tmdb.org/t/p/w500{{ $favorite['poster_path'] }}"
                                      alt="{{ $favorite['title'] }}"
-                                     class="w-full h-[300px] object-cover"
+                                     class="w-full h-[400px] object-cover"
                                      loading="lazy">
                             @else
                                 <div class="w-full h-[300px] bg-gray-700 flex items-center justify-center">
