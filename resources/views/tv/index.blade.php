@@ -55,20 +55,17 @@
                 
                 window.history.pushState({}, '', `/tv${genre ? `?genre=${genre}` : ''}`);
                 
-                AOS.refresh();
+                AOS.init({
+                    duration: 800,
+                    once: false,
+                    mirror: true,
+                    offset: 50
+                });
             } catch (error) {
                 console.error('Erreur lors du filtrage:', error);
             }
         }
-     }"
-     x-init="
-        AOS.init({
-            duration: 800,
-            once: false,
-            mirror: true,
-            offset: 50
-        });
-     ">
+     }">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <x-aos-wrapper animation="fade-down" duration="800">
             <div class="flex justify-center flex-wrap gap-2 mb-8">
