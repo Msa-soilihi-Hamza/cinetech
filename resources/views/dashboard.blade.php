@@ -51,23 +51,22 @@
                 }
                 
                 const html = await response.text();
-                document.querySelector('.movies-grid .grid').innerHTML = html;
-                
-                // Forcer une réinitialisation complète de AOS
-                AOS.refreshHard();
-                
-                // Réinitialiser les attributs AOS sur les nouveaux éléments
-                document.querySelectorAll('[data-aos]').forEach(el => {
-                    el.setAttribute('data-aos-delay', '0');
-                    el.removeAttribute('data-aos-animate');
-                });
-                
-                // Réinitialiser AOS après un court délai pour s'assurer que le DOM est mis à jour
-                setTimeout(() => {
-                    AOS.refresh();
-                }, 100);
+                document.querySelector('.movies-grid').innerHTML = html;
                 
                 window.history.pushState({}, '', `/dashboard${genreId ? `?genre=${genreId}` : ''}`);
+                
+                // Réinitialiser complètement AOS
+                AOS.refreshHard();
+                
+                // Réinitialiser AOS avec un petit délai pour s'assurer que le DOM est mis à jour
+                setTimeout(() => {
+                    AOS.init({
+                        duration: 800,
+                        once: false,
+                        mirror: true,
+                        offset: 50
+                    });
+                }, 100);
             } catch (error) {
                 console.error('Erreur lors du filtrage:', error);
             }
@@ -93,11 +92,67 @@
             </div>
         </x-aos-wrapper>
 
-        <x-aos-wrapper animation="fade-up" duration="800">
-            <div class="movies-grid">
-                <x-movies-grid :movies="$movies" />
-            </div>
-        </x-aos-wrapper>
+        <div class="movies-grid">
+            @if(!empty($movies))
+                <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+                    @foreach($movies->chunk(8) as $chunkIndex => $chunk)
+                        <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 col-span-full" 
+                             data-aos="fade-up"
+                             data-aos-duration="800"
+                             data-aos-delay="{{ $chunkIndex * 200 }}">
+                            @foreach($chunk as $movie)
+                                <div class="bg-gray-800 rounded-lg overflow-hidden shadow-lg transition-transform hover:scale-105">
+                                    <a href="{{ route('movies.show', $movie['id']) }}">
+                                        @if($movie['poster_path'])
+                                            <img src="https://image.tmdb.org/t/p/w500{{ $movie['poster_path'] }}"
+                                                 alt="{{ $movie['title'] }}"
+                                                 class="w-full h-[400px] object-cover"
+                                                 loading="lazy">
+                                        @else
+                                            <div class="w-full h-[400px] bg-gray-700 flex items-center justify-center">
+                                                <span class="text-gray-400">Image non disponible</span>
+                                            </div>
+                                        @endif
+                                    </a>
+                                    
+                                    <div class="p-4">
+                                        <div class="flex justify-between items-center mb-2">
+                                            <a href="{{ route('movies.show', $movie['id']) }}" class="block">
+                                                <h2 class="text-xl font-bold text-white hover:text-purple-500">{{ $movie['title'] }}</h2>
+                                            </a>
+                                            <x-favorite-button :id="$movie['id']" type="movie" />
+                                        </div>
+                                        <div class="flex justify-between items-center">
+                                            <span class="text-purple-500 font-bold">{{ number_format($movie['vote_average'], 1) }}/10</span>
+                                            <span class="text-gray-400">{{ \Carbon\Carbon::parse($movie['release_date'])->format('Y') }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    @endforeach
+                </div>
+
+                @if($movies->hasPages())
+                    <div class="mt-8 flex justify-center">
+                        {{ $movies->links() }}
+                    </div>
+                @endif
+            @endif
+        </div>
     </div>
 </div>
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    AOS.init({
+        duration: 800,
+        once: false,
+        mirror: true,
+        offset: 50
+    });
+});
+</script>
+@endpush
 @endsection
