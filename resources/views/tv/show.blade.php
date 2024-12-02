@@ -58,23 +58,139 @@
                         @endif
 
                         @if(isset($tvShow['credits']['cast']))
-                            <div class="cast-section">
+                            <div class="cast-section mb-8">
                                 <h2 class="text-xl font-semibold mb-4">Distribution principale</h2>
                                 <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                                     @foreach(array_slice($tvShow['credits']['cast'], 0, 8) as $actor)
-                                        <div class="bg-gray-700 p-4 rounded-lg text-center">
-                                            @if(isset($actor['profile_path']))
-                                                <img src="https://image.tmdb.org/t/p/w185{{ $actor['profile_path'] }}"
-                                                     alt="{{ $actor['name'] }}"
-                                                     class="w-24 h-24 rounded-full mx-auto object-cover mb-3">
-                                            @endif
-                                            <p class="font-semibold">{{ $actor['name'] }}</p>
-                                            <p class="text-sm text-gray-400">{{ $actor['character'] }}</p>
+                                        <div class="bg-gray-700 rounded-lg overflow-hidden shadow-lg hover:bg-gray-600 transition-colors cursor-pointer"
+                                             onclick="showActorFilmography({{ $actor['id'] }}, '{{ $actor['name'] }}')">
+                                            <div class="relative w-42 h-43 mx-auto mb-3">
+                                                @if(isset($actor['profile_path']))
+                                                    <img src="https://image.tmdb.org/t/p/w185{{ $actor['profile_path'] }}"
+                                                         alt="{{ $actor['name'] }}"
+                                                         class="w-full h-full object-cover">
+                                                @else
+                                                    <div class="w-full h-full rounded-lg bg-gray-800 flex items-center justify-center">
+                                                        <span class="text-gray-400 text-3xl">?</span>
+                                                    </div>
+                                                @endif
+                                            </div>
+                                            <div class="p-4">
+                                                <p class="font-semibold truncate">{{ $actor['name'] }}</p>
+                                                <p class="text-sm text-gray-400 truncate">{{ $actor['character'] }}</p>
+                                            </div>
                                         </div>
                                     @endforeach
                                 </div>
+
+                                @if(count($tvShow['credits']['cast']) > 8)
+                                    <div class="mt-4 text-center">
+                                        <button onclick="showAllCast()" class="text-purple-500 hover:text-purple-400 transition-colors">
+                                            Voir tous les acteurs ({{ count($tvShow['credits']['cast']) }})
+                                        </button>
+                                    </div>
+                                @endif
+                            </div>
+
+                            <!-- Modal pour tous les acteurs -->
+                            <div id="castModal" class="hidden fixed inset-0 bg-black bg-opacity-75 z-40">
+                                <div class="container mx-auto h-full overflow-y-auto py-8">
+                                    <div class="bg-gray-800 p-6 rounded-lg max-w-4xl mx-auto">
+                                        <div class="flex justify-between items-center mb-6">
+                                            <h3 class="text-2xl font-bold">Distribution complète</h3>
+                                            <button onclick="hideCastModal()" class="text-gray-400 hover:text-white">
+                                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                                            @foreach($tvShow['credits']['cast'] as $actor)
+                                                <div class="bg-gray-700 p-4 rounded-lg hover:bg-gray-600 transition-colors cursor-pointer"
+                                                     onclick="showActorFilmography({{ $actor['id'] }}, '{{ $actor['name'] }}')">
+                                                    <div class="relative w-28 h-28 mx-auto mb-3">
+                                                        @if(isset($actor['profile_path']))
+                                                            <img src="https://image.tmdb.org/t/p/w185{{ $actor['profile_path'] }}"
+                                                                 alt="{{ $actor['name'] }}"
+                                                                 class="w-full h-full rounded-lg object-cover object-center shadow-lg">
+                                                        @else
+                                                            <div class="w-full h-full rounded-lg bg-gray-800 flex items-center justify-center">
+                                                                <span class="text-gray-400 text-3xl">?</span>
+                                                            </div>
+                                                        @endif
+                                                    </div>
+                                                    <p class="font-semibold truncate">{{ $actor['name'] }}</p>
+                                                    <p class="text-sm text-gray-400 truncate">{{ $actor['character'] }}</p>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         @endif
+
+                        <div class="mt-8">
+                            <h2 class="text-2xl font-semibold text-gray-200 mb-4">Bande Annonce</h2>
+                            @if(isset($tvShow['videos']) && !empty($tvShow['videos']['results']))
+                                @php
+                                    // Cherche d'abord une bande-annonce en français
+                                    $trailer = collect($tvShow['videos']['results'])->first(function($video) {
+                                        return $video['type'] === 'Trailer' && $video['site'] === 'YouTube' && $video['iso_639_1'] === 'fr';
+                                    });
+                                    
+                                    // Si pas de bande-annonce en français, prend la première disponible
+                                    if (!$trailer) {
+                                        $trailer = collect($tvShow['videos']['results'])->first(function($video) {
+                                            return $video['type'] === 'Trailer' && $video['site'] === 'YouTube';
+                                        });
+                                    }
+                                @endphp
+                                
+                                @if($trailer)
+                                    <div class="aspect-w-16 aspect-h-9">
+                                        <iframe 
+                                            src="https://www.youtube.com/embed/{{ $trailer['key'] }}" 
+                                            frameborder="0" 
+                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                            allowfullscreen
+                                            class="w-full"
+                                        ></iframe>
+                                    </div>
+                                @else
+                                    <p class="text-gray-400">Aucune bande annonce disponible</p>
+                                @endif
+                            @else
+                                <p class="text-gray-400">Aucune bande annonce disponible</p>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Filmographie -->
+        <div id="filmographyModal" class="hidden fixed inset-0 bg-black bg-opacity-75 z-50 overflow-y-auto">
+            <div class="min-h-screen px-4 text-center">
+                <div class="fixed inset-0 transition-opacity" aria-hidden="true" onclick="hideFilmographyModal()">
+                    <div class="absolute inset-0 bg-gray-900 opacity-75"></div>
+                </div>
+
+                <span class="inline-block h-screen align-middle" aria-hidden="true">&#8203;</span>
+
+                <div class="inline-block w-full max-w-6xl p-6 my-8 text-left align-middle transition-all transform bg-gray-800 shadow-xl rounded-lg">
+                    <div class="flex justify-between items-center mb-6 border-b border-gray-700 pb-4">
+                        <h3 class="text-2xl font-bold text-white" id="actorName"></h3>
+                        <button onclick="hideFilmographyModal()" class="text-gray-400 hover:text-white transition-colors">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div id="filmographyContent" class="mt-4">
+                        <div class="flex items-center justify-center py-12">
+                            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -247,5 +363,128 @@ function toggleReplyForm(commentId) {
     const form = document.getElementById(`reply-form-${commentId}`);
     form.classList.toggle('hidden');
 }
+
+function showAllCast() {
+    document.getElementById('castModal').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+function hideCastModal() {
+    document.getElementById('castModal').classList.add('hidden');
+    document.body.style.overflow = 'auto';
+}
+
+async function showActorFilmography(actorId, actorName) {
+    const modal = document.getElementById('filmographyModal');
+    const nameElement = document.getElementById('actorName');
+    const content = document.getElementById('filmographyContent');
+    
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+    nameElement.textContent = `Filmographie de ${actorName}`;
+    content.innerHTML = `
+        <div class="flex items-center justify-center py-12">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500"></div>
+        </div>
+    `;
+    
+    try {
+        const response = await fetch(`/api/actor/${actorId}/movies`);
+        const data = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(data.error || `Erreur ${response.status}`);
+        }
+        
+        if (!data.cast || data.cast.length === 0) {
+            content.innerHTML = '<p class="text-center text-gray-400">Aucun film trouvé pour cet acteur.</p>';
+            return;
+        }
+        
+        let html = '<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">';
+        
+        data.cast
+            .sort((a, b) => new Date(b.release_date || '1900') - new Date(a.release_date || '1900'))
+            .forEach(movie => {
+                html += `
+                    <div onclick="window.location.href='/movie/${movie.id}'" 
+                         class="bg-gray-700 rounded-lg overflow-hidden shadow-md transform hover:scale-105 transition-all duration-200 hover:shadow-purple-500/20 cursor-pointer">
+                        <div class="relative aspect-[2/3] group">
+                            ${movie.poster_path 
+                                ? `<img src="https://image.tmdb.org/t/p/w342${movie.poster_path}" 
+                                       alt="${movie.title}" 
+                                       class="w-full h-full object-cover transition-transform duration-200 group-hover:scale-110">`
+                                : `<div class="w-full h-full bg-gray-800 flex items-center justify-center">
+                                       <span class="text-gray-600 text-2xl">?</span>
+                                   </div>`
+                            }
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-end">
+                                <div class="p-2 text-white">
+                                    <p class="text-xs font-medium">${movie.character || 'Rôle non spécifié'}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-2">
+                            <h4 class="font-semibold text-sm text-white mb-1 line-clamp-1">${movie.title}</h4>
+                            <div class="flex items-center justify-between text-xs">
+                                <p class="text-gray-400">${movie.release_date ? new Date(movie.release_date).getFullYear() : 'Date inconnue'}</p>
+                                ${movie.vote_average 
+                                    ? `<div class="flex items-center bg-gray-800 px-1.5 py-0.5 rounded-full">
+                                           <span class="text-yellow-400 mr-0.5">★</span>
+                                           <span class="text-gray-300">${movie.vote_average.toFixed(1)}</span>
+                                       </div>`
+                                    : ''
+                                }
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        
+        html += '</div>';
+        content.innerHTML = html;
+        
+    } catch (error) {
+        console.error('Error:', error);
+        content.innerHTML = `
+            <div class="text-center py-8">
+                <p class="text-red-500 mb-4">${error.message || 'Une erreur est survenue lors du chargement de la filmographie.'}</p>
+                <button onclick="showActorFilmography(${actorId}, '${actorName}')" 
+                        class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
+                    Réessayer
+                </button>
+            </div>
+        `;
+    }
+}
+
+function hideFilmographyModal() {
+    const modal = document.getElementById('filmographyModal');
+    modal.classList.add('hidden');
+    document.body.style.overflow = 'auto';
+}
+
+// Fermer le modal en appuyant sur Echap
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        hideFilmographyModal();
+        hideCastModal();
+    }
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Fermer les modals en cliquant sur l'overlay
+    document.querySelector('#filmographyModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            hideFilmographyModal();
+        }
+    });
+    
+    document.querySelector('#castModal')?.addEventListener('click', function(e) {
+        if (e.target === this) {
+            hideCastModal();
+        }
+    });
+});
 </script>
 @endsection
