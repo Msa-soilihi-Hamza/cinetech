@@ -1,6 +1,124 @@
 @extends('layouts.app')
 
 @section('content')
+<!-- Hero Section avec Splide -->
+<div class="splide relative bg-gray-900" id="main-slider">
+    <div class="splide__track">
+        <div class="splide__list">
+            <!-- Slide 1 - Les Gardiens de la Galaxie -->
+            <div class="splide__slide relative h-[110vh]">
+                <div class="absolute inset-0">
+                    <img src="https://image.tmdb.org/t/p/original/5YZbUmjbMa3ClvSW1Wj3D6XGolb.jpg" 
+                         alt="Guardians of the Galaxy Banner" 
+                         class="w-full h-full object-cover object-[center_20%] opacity-50">
+                    <div class="absolute inset-0 bg-gradient-to-r from-gray-900/90 via-gray-900/50 to-transparent"></div>
+                </div>
+                <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center">
+                    <div class="max-w-3xl">
+                        <x-aos-wrapper animation="fade-right" duration="1000">
+                            <h1 class="text-5xl font-bold text-white mb-4">Les Gardiens de la Galaxie Vol. 3</h1>
+                            <p class="text-xl text-gray-300 mb-6">
+                                Peter Quill, encore sous le choc d'une terrible perte, doit rallier son équipe pour une mission dangereuse visant à sauver Rocket.
+                            </p>
+                            <div class="flex items-center gap-4">
+                                <button class="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-full flex items-center gap-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    Lecture
+                                </button>
+                                <x-favorite-button :id="447365" type="movie" />
+                            </div>
+                        </x-aos-wrapper>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 2 - Super Mario Bros -->
+            <div class="splide__slide relative h-[110vh]">
+                <div class="absolute inset-0">
+                    <img src="https://image.tmdb.org/t/p/original/9n2tJBplPbgR2ca05hS5CKXwP2c.jpg" 
+                         alt="Super Mario Bros Banner" 
+                         class="w-full h-full object-cover object-[center_20%] opacity-50">
+                    <div class="absolute inset-0 bg-gradient-to-r from-gray-900/90 via-gray-900/50 to-transparent"></div>
+                </div>
+                <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center">
+                    <div class="max-w-3xl">
+                        <x-aos-wrapper animation="fade-right" duration="1000">
+                            <h1 class="text-5xl font-bold text-white mb-4">Super Mario Bros. Le Film</h1>
+                            <p class="text-xl text-gray-300 mb-6">
+                                Un plombier nommé Mario parcourt un labyrinthe souterrain avec son frère, Luigi, essayant de sauver une princesse capturée.
+                            </p>
+                            <div class="flex items-center gap-4">
+                                <button class="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-full flex items-center gap-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    Lecture
+                                </button>
+                                <x-favorite-button :id="502356" type="movie" />
+                            </div>
+                        </x-aos-wrapper>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 3 - Avatar 2 -->
+            <div class="splide__slide relative h-[110vh]">
+                <div class="absolute inset-0">
+                    <img src="https://image.tmdb.org/t/p/original/198vrF8k7mfQ4FjDJsBmdQcaiyq.jpg" 
+                         alt="Avatar 2 Banner" 
+                         class="w-full h-full object-cover object-[center_20%] opacity-50">
+                    <div class="absolute inset-0 bg-gradient-to-r from-gray-900/90 via-gray-900/50 to-transparent"></div>
+                </div>
+                <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center">
+                    <div class="max-w-3xl">
+                        <x-aos-wrapper animation="fade-right" duration="1000">
+                            <h1 class="text-5xl font-bold text-white mb-4">Avatar : La Voie de l'eau</h1>
+                            <p class="text-xl text-gray-300 mb-6">
+                                Jake Sully et Ney'tiri ont formé une famille et font tout pour rester aussi soudés que possible. Ils sont cependant contraints de quitter leur foyer et d'explorer les différentes régions de Pandora.
+                            </p>
+                            <div class="flex items-center gap-4">
+                                <button class="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-full flex items-center gap-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    Lecture
+                                </button>
+                                <x-favorite-button :id="76600" type="movie" />
+                            </div>
+                        </x-aos-wrapper>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var splide = new Splide('#main-slider', {
+        type: 'fade',
+        rewind: true,
+        autoplay: true,
+        interval: 5000,
+        arrows: true,
+        pagination: true,
+        video: {
+            loop: true,
+        },
+    });
+
+    splide.mount();
+});
+</script>
+@endpush
+
+<!-- Contenu existant -->
 <div class="min-h-screen bg-gray-900 py-8">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <x-aos-wrapper animation="fade-down" duration="800">

@@ -17,18 +17,46 @@ class CommentController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'content' => 'required|string',
-            'media_type' => 'required|in:movie,tv',
-            'media_id' => 'required|integer',
-            'parent_id' => 'nullable|exists:comments,id'
+            'content' => [
+                'required',
+                'string',
+                'min:2',
+                'max:1000',
+                'not_regex:/^[\s]*$/',
+            ],
+            'media_type' => [
+                'required',
+                'string',
+                'in:movie,tv'
+            ],
+            'media_id' => [
+                'required',
+                'integer',
+                'min:1'
+            ],
+            'parent_id' => [
+                'nullable',
+                'exists:comments,id',
+                function ($attribute, $value, $fail) {
+                    if ($value) {
+                        $parentComment = Comment::find($value);
+                        if ($parentComment && $parentComment->parent_id) {
+                            $fail('Les réponses imbriquées ne sont pas autorisées.');
+                        }
+                    }
+                }
+            ]
         ]);
 
         $comment = Comment::create([
-            ...$validated,
+            'content' => strip_tags(trim($validated['content'])),
+            'media_type' => strtolower($validated['media_type']),
+            'media_id' => $validated['media_id'],
+            'parent_id' => $validated['parent_id'] ?? null,
             'user_id' => Auth::id()
         ]);
 
-        return back();
+        return back()->with('success', 'Commentaire ajouté avec succès');
     }
 
     public function update(Request $request, Comment $comment): RedirectResponse
@@ -36,10 +64,18 @@ class CommentController extends Controller
         $this->authorize('update', $comment);
 
         $validated = $request->validate([
-            'content' => 'required|string'
+            'content' => [
+                'required',
+                'string',
+                'min:2',
+                'max:1000',
+                'not_regex:/^[\s]*$/',
+            ]
         ]);
 
-        $comment->update($validated);
+        $comment->update([
+            'content' => strip_tags(trim($validated['content']))
+        ]);
 
         return back()->with('success', 'Commentaire modifié avec succès');
     }
@@ -57,8 +93,8 @@ class CommentController extends Controller
     {
         $comments = Comment::where('media_type', $request->media_type)
             ->where('media_id', $request->media_id)
-            ->whereNull('parent_id') // Récupère uniquement les commentaires parents
-            ->with(['user', 'replies.user']) // Charge les relations utilisateur et réponses
+            ->whereNull('parent_id')
+            ->with(['user', 'replies.user'])
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -71,7 +107,6 @@ class CommentController extends Controller
 
     public function show(Comment $comment)
     {
-        // Charge le commentaire avec ses réponses et les utilisateurs associés
         $comment->load(['user', 'replies.user']);
 
         return view('comments.show', [
@@ -84,17 +119,27 @@ class CommentController extends Controller
     public function reply(Request $request, Comment $comment): RedirectResponse
     {
         $validated = $request->validate([
-            'content' => 'required|string'
+            'content' => [
+                'required',
+                'string',
+                'min:2',
+                'max:1000',
+                'not_regex:/^[\s]*$/',
+            ]
         ]);
 
+        if ($comment->parent_id) {
+            return back()->with('error', 'Les réponses imbriquées ne sont pas autorisées.');
+        }
+
         $reply = Comment::create([
-            'content' => $validated['content'],
+            'content' => strip_tags(trim($validated['content'])),
             'user_id' => Auth::id(),
             'media_type' => $comment->media_type,
             'media_id' => $comment->media_id,
             'parent_id' => $comment->id
         ]);
 
-        return back();
+        return back()->with('success', 'Réponse ajoutée avec succès');
     }
 }
