@@ -175,4 +175,47 @@ class TvController extends Controller
 
         return new LengthAwarePaginator([], 0, 20, 1);
     }
+
+    public function show($id)
+    {
+        try {
+            // Récupérer les détails de la série avec les vidéos
+            $tvShow = Http::withOptions(['verify' => false])
+                ->get('https://api.themoviedb.org/3/tv/'.$id, [
+                    'api_key' => env('TMDB_API_KEY'),
+                    'append_to_response' => 'credits,videos',
+                    'language' => 'fr-FR'
+                ])
+                ->json();
+
+            // Récupérer aussi les vidéos en anglais pour avoir plus de choix
+            $englishVideos = Http::withOptions(['verify' => false])
+                ->get('https://api.themoviedb.org/3/tv/'.$id.'/videos', [
+                    'api_key' => env('TMDB_API_KEY'),
+                    'language' => 'en-US'
+                ])
+                ->json();
+
+            // Fusionner les vidéos françaises et anglaises
+            if (isset($englishVideos['results'])) {
+                $tvShow['videos']['results'] = array_merge(
+                    $tvShow['videos']['results'] ?? [],
+                    $englishVideos['results']
+                );
+            }
+
+            // Récupérer les commentaires
+            $comments = Comment::with(['user', 'replies.user'])
+                ->where('media_type', 'tv')
+                ->where('media_id', $id)
+                ->whereNull('parent_id')
+                ->latest()
+                ->get();
+
+            return view('tv.show', compact('tvShow', 'comments'));
+        } catch (\Exception $e) {
+            \Log::error('Error fetching TV show: ' . $e->getMessage());
+            return redirect()->route('home')->with('error', 'Série non trouvée');
+        }
+    }
 } 
