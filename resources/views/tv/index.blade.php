@@ -67,8 +67,22 @@
         }
      }">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Menu déroulant pour mobile -->
+        <div class="sm:hidden mb-8">
+            <select 
+                class="w-full px-4 py-2 text-sm rounded-md text-white bg-gray-800 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                x-model="selectedGenre"
+                @change="filterShows($event.target.value)">
+                <option value="">{{ __('Tous les genres') }}</option>
+                @foreach($genres as $key => $id)
+                    <option value="{{ $key }}">{{ ucfirst(str_replace('_', ' ', $key)) }}</option>
+                @endforeach
+            </select>
+        </div>
+
+        <!-- Boutons de filtre pour desktop -->
         <x-aos-wrapper animation="fade-down" duration="800">
-            <div class="flex justify-center flex-wrap gap-2 mb-8">
+            <div class="hidden sm:flex justify-center flex-wrap gap-2 mb-8">
                 <button 
                     @click="filterShows('')"
                     :class="!selectedGenre ? 'bg-purple-600 text-white' : 'bg-gray-800 text-gray-300 hover:bg-purple-600 hover:text-white'"

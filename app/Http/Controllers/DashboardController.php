@@ -32,6 +32,7 @@ class DashboardController extends Controller
     private function fetchMovies($genre = null)
     {
         try {
+            // Première requête pour la page 1
             $params = [
                 'api_key' => env('TMDB_API_KEY'),
                 'language' => 'fr-FR',
@@ -43,15 +44,28 @@ class DashboardController extends Controller
                 $params['with_genres'] = $genre;
             }
 
-            $response = Http::withOptions(['verify' => false])
+            $response1 = Http::withOptions(['verify' => false])
                 ->get('https://api.themoviedb.org/3/discover/movie', $params);
 
-            if ($response->successful()) {
-                $data = $response->json();
+            // Deuxième requête pour les 10 films supplémentaires
+            $params['page'] = request('page', 1) + 1;
+            $response2 = Http::withOptions(['verify' => false])
+                ->get('https://api.themoviedb.org/3/discover/movie', $params);
+
+            if ($response1->successful() && $response2->successful()) {
+                $data1 = $response1->json();
+                $data2 = $response2->json();
+
+                // Combiner les résultats des deux pages
+                $results = array_merge(
+                    $data1['results'],
+                    array_slice($data2['results'], 0, 10) // Prendre seulement les 10 premiers de la deuxième page
+                );
+
                 return new LengthAwarePaginator(
-                    $data['results'],
-                    $data['total_results'],
-                    20,
+                    $results,
+                    $data1['total_results'],
+                    30,
                     request('page', 1),
                     ['path' => route('dashboard'), 'query' => array_filter(['genre' => $genre])]
                 );
@@ -67,13 +81,13 @@ class DashboardController extends Controller
     public function index(Request $request)
     {
         $genres = $this->getGenres();
-        $selectedGenre = $request->genre;
+        $selectedGenre = $request->query('genre');
         $movies = $this->fetchMovies($selectedGenre);
 
-        if ($request->ajax()) {
-            return view('movies._filtered-grid', compact('movies'))->render();
+        if ($request->header('X-Requested-With') === 'XMLHttpRequest') {
+            return view('_movies-grid', compact('movies'))->render();
         }
 
-        return view('dashboard', compact('genres', 'movies'));
+        return view('dashboard', compact('movies', 'genres'));
     }
 } 
