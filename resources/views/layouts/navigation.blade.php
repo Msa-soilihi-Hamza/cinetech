@@ -46,7 +46,7 @@
             <!-- Bouton Menu Mobile et User Menu -->
             <div class="flex items-center">
                 <!-- User Menu (Desktop) -->
-                <div class="hidden sm:flex sm:items-center">
+                <div class="sm:flex sm:items-center">
                     @auth
                         <x-dropdown align="right" width="48">
                             <x-slot name="trigger">
@@ -91,86 +91,8 @@
                         </div>
                     @endauth
                 </div>
-
-                <!-- Bouton Menu Mobile -->
-                <div class="block desktop:hidden">
-                    <button type="button" 
-                            onclick="toggleMobileMenu()"
-                            class="mobile:inline-flex desktop:hidden items-center justify-center p-2 rounded-md text-white hover:text-white focus:outline-none">
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" 
-                                  stroke-linejoin="round" 
-                                  stroke-width="2" 
-                                  d="M4 6h16M4 12h16M4 18h16"/>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Menu Mobile -->
-        <div class="hidden mobile:block desktop:hidden" id="mobile-menu">
-            <div class="px-2 pt-2 pb-3 space-y-1">
-                <a href="{{ route('all.media') }}" 
-                   class="text-white hover:text-purple-500 block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('all.media') ? 'bg-purple-600' : '' }}"
-                   data-turbo-frame="content">
-                    {{ __('Films & Séries') }}
-                </a>
-                <a href="{{ route('dashboard') }}" 
-                   class="text-white hover:text-purple-500 block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('dashboard') ? 'bg-purple-600' : '' }}"
-                   data-turbo-frame="content">
-                    {{ __('Films') }}
-                </a>
-                <a href="{{ route('tv.index') }}" 
-                   class="text-white hover:text-purple-500 block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('tv.*') ? 'bg-purple-600' : '' }}"
-                   data-turbo-frame="content">
-                    {{ __('Séries') }}
-                </a>
-                <a href="{{ route('favorites.index') }}" 
-                   class="text-white hover:text-purple-500 block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('favorites.index') ? 'bg-purple-600' : '' }}"
-                   data-turbo-frame="content">
-                    {{ __('Favoris') }}
-                </a>
-
-                @auth
-                    <a href="{{ route('profile.edit') }}" 
-                       class="text-white hover:text-purple-500 block px-3 py-2 rounded-md text-base font-medium">
-                        {{ __('Mon Profil') }}
-                    </a>
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <button type="submit" 
-                                class="text-white hover:text-purple-500 block w-full text-left px-3 py-2 rounded-md text-base font-medium">
-                            {{ __('Déconnexion') }}
-                        </button>
-                    </form>
-                @else
-                    <a href="{{ route('login') }}" 
-                       class="text-white hover:text-purple-500 block px-3 py-2 rounded-md text-base font-medium">
-                        {{ __('Connexion') }}
-                    </a>
-                    <a href="{{ route('register') }}" 
-                       class="text-white hover:text-purple-500 block px-3 py-2 rounded-md text-base font-medium">
-                        {{ __('Inscription') }}
-                    </a>
-                @endauth
             </div>
         </div>
     </div>
 </nav>
-<!-- Script pour le menu mobile -->
-<script>
-function toggleMobileMenu() {
-    const mobileMenu = document.getElementById('mobile-menu');
-    mobileMenu.classList.toggle('hidden');
-}
-
-// Cacher le menu mobile quand l'écran dépasse 950px
-window.addEventListener('resize', function() {
-    const mobileMenu = document.getElementById('mobile-menu');
-    if (window.innerWidth >= 950) {
-        mobileMenu.classList.add('hidden');
-    }
-});
-</script>
 

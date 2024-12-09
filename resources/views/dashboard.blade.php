@@ -55,10 +55,8 @@
                 
                 window.history.pushState({}, '', `/dashboard${genreId ? `?genre=${genreId}` : ''}`);
                 
-                // Réinitialiser complètement AOS
                 AOS.refreshHard();
                 
-                // Réinitialiser AOS avec un petit délai pour s'assurer que le DOM est mis à jour
                 setTimeout(() => {
                     AOS.init({
                         duration: 800,
@@ -73,8 +71,22 @@
         }
      }">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Menu déroulant pour mobile -->
+        <div class="sm:hidden mb-8">
+            <select 
+                class="w-full px-4 py-2 text-sm rounded-md text-white bg-gray-800 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                x-model="selectedGenre"
+                @change="filterMovies($event.target.value)">
+                <option value="">{{ __('Tous les genres') }}</option>
+                @foreach($genres as $genre)
+                    <option value="{{ $genre['id'] }}">{{ $genre['name'] }}</option>
+                @endforeach
+            </select>
+        </div>
+
+        <!-- Boutons de filtre pour desktop -->
         <x-aos-wrapper animation="fade-down" duration="800">
-            <div class="flex justify-center flex-wrap gap-2 mb-8">
+            <div class="hidden sm:flex justify-center flex-wrap gap-2 mb-8">
                 @foreach($genres as $genre)
                     <button 
                         @click="filterMovies('{{ $genre['id'] }}')"
