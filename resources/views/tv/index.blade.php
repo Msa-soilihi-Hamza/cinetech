@@ -38,8 +38,10 @@
      x-data="{ 
         selectedGenre: '{{ request('genre') }}',
         async filterShows(genre) {
+            console.log('filterShows appelé avec genre:', genre);
             this.selectedGenre = genre;
             try {
+                console.log('Envoi de la requête fetch...');
                 const response = await fetch(`/tv?genre=${genre}`, {
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest'
@@ -51,6 +53,7 @@
                 }
                 
                 const html = await response.text();
+                console.log('Réponse reçue, mise à jour du DOM...');
                 document.querySelector('.shows-grid').innerHTML = html;
                 
                 window.history.pushState({}, '', `/tv${genre ? `?genre=${genre}` : ''}`);
@@ -72,7 +75,8 @@
             <select 
                 class="w-full px-4 py-2 text-sm rounded-md text-white bg-gray-800 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
                 x-model="selectedGenre"
-                @change="filterShows($event.target.value)">
+                x-on:change="filterShows($event.target.value)"
+                x-init="$el.value = selectedGenre">
                 <option value="">{{ __('Tous les genres') }}</option>
                 @foreach($genres as $key => $id)
                     <option value="{{ $key }}">{{ ucfirst(str_replace('_', ' ', $key)) }}</option>

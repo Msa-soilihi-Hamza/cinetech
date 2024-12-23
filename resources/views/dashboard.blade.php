@@ -38,8 +38,10 @@
      x-data="{ 
         selectedGenre: '{{ request('genre') }}',
         async filterMovies(genreId) {
+            console.log('filterMovies appelé avec genre:', genreId);
             this.selectedGenre = genreId;
             try {
+                console.log('Envoi de la requête fetch...');
                 const response = await fetch(`/dashboard?genre=${genreId}`, {
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest'
@@ -51,6 +53,7 @@
                 }
                 
                 const html = await response.text();
+                console.log('Réponse reçue, mise à jour du DOM...');
                 document.querySelector('.movies-grid').innerHTML = html;
                 
                 window.history.pushState({}, '', `/dashboard${genreId ? `?genre=${genreId}` : ''}`);
@@ -76,7 +79,8 @@
             <select 
                 class="w-full px-4 py-2 text-sm rounded-md text-white bg-gray-800 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
                 x-model="selectedGenre"
-                @change="filterMovies($event.target.value)">
+                x-on:change="filterMovies($event.target.value)"
+                x-init="$el.value = selectedGenre">
                 <option value="">{{ __('Tous les genres') }}</option>
                 @foreach($genres as $genre)
                     <option value="{{ $genre['id'] }}">{{ $genre['name'] }}</option>

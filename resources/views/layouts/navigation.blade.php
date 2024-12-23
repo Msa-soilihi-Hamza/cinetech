@@ -5,7 +5,7 @@
             <div class="flex">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
-                    <a href="{{ route('dashboard') }}" class="text-purple-500 font-bold text-2xl">
+                    <a href="{{ route('all.media') }}" class="text-purple-500 font-bold text-2xl">
                         CINETECH
                     </a>
                 </div>
@@ -99,7 +99,7 @@
 <!-- Navigation Mobile (Bottom) -->
 <nav class="sm:hidden fixed bottom-0 left-0 right-0 bg-gray-800 border-t border-gray-800 z-50">
     <div class="grid grid-cols-5 h-16">
-        <a href="{{ route('dashboard') }}" class="flex flex-col items-center justify-center text-white hover:text-purple-400">
+        <a href="{{ route('all.media') }}" class="flex flex-col items-center justify-center text-white hover:text-purple-400">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
             </svg>
