@@ -38,19 +38,24 @@
                                 @if($favorite['poster_path'])
                                     <img src="https://image.tmdb.org/t/p/w500{{ $favorite['poster_path'] }}"
                                          alt="{{ $favorite['title'] }}"
-                                         class="w-full h-[400px] object-cover"
+                                         class="w-full h-[250px] sm:h-[400px] object-cover"
                                          loading="lazy">
                                 @else
-                                    <div class="w-full h-[400px] bg-gray-700 flex items-center justify-center">
+                                    <div class="w-full h-[250px] sm:h-[400px] bg-gray-700 flex items-center justify-center">
                                         <span class="text-gray-400">Image non disponible</span>
                                     </div>
                                 @endif
                             </a>
                             
-                            <div class="p-4">
+                            <div class="p-2 sm:p-4">
                                 <div class="flex justify-between items-start mb-2">
-                                    <h3 class="text-lg font-bold text-white truncate hover:text-purple-500" title="{{ $favorite['title'] }}">
-                                        {{ $favorite['title'] }}
+                                    <h3 class="text-sm sm:text-lg font-bold text-white break-words sm:truncate hover:text-purple-500" title="{{ $favorite['title'] }}">
+                                        @if(strlen($favorite['title']) > 15)
+                                            <span class="sm:hidden">{{ wordwrap($favorite['title'], 15, "\n", true) }}</span>
+                                            <span class="hidden sm:inline">{{ $favorite['title'] }}</span>
+                                        @else
+                                            {{ $favorite['title'] }}
+                                        @endif
                                     </h3>
                                     <form action="{{ route('favorites.destroy') }}"
                                           method="POST"
@@ -98,19 +103,24 @@
                                 @if($favorite['poster_path'])
                                     <img src="https://image.tmdb.org/t/p/w500{{ $favorite['poster_path'] }}"
                                          alt="{{ $favorite['title'] }}"
-                                         class="w-full h-[400px] object-cover"
+                                         class="w-full h-[250px] sm:h-[400px] object-cover"
                                          loading="lazy">
                                 @else
-                                    <div class="w-full h-[400px] bg-gray-700 flex items-center justify-center">
+                                    <div class="w-full h-[250px] sm:h-[400px] bg-gray-700 flex items-center justify-center">
                                         <span class="text-gray-400">Image non disponible</span>
                                     </div>
                                 @endif
                             </a>
                             
-                            <div class="p-4">
+                            <div class="p-2 sm:p-4">
                                 <div class="flex justify-between items-start mb-2">
-                                    <h3 class="text-lg font-bold text-white truncate hover:text-purple-500" title="{{ $favorite['title'] }}">
-                                        {{ $favorite['title'] }}
+                                    <h3 class="text-sm sm:text-lg font-bold text-white break-words sm:truncate hover:text-purple-500" title="{{ $favorite['title'] }}">
+                                        @if(strlen($favorite['title']) > 15)
+                                            <span class="sm:hidden">{{ wordwrap($favorite['title'], 15, "\n", true) }}</span>
+                                            <span class="hidden sm:inline">{{ $favorite['title'] }}</span>
+                                        @else
+                                            {{ $favorite['title'] }}
+                                        @endif
                                     </h3>
                                     <form action="{{ route('favorites.destroy') }}"
                                           method="POST"
