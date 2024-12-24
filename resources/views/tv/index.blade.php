@@ -133,17 +133,17 @@
                                     </a>
                                     
                                     <div class="p-2 sm:p-4">
-                                        <div class="flex items-start justify-between sm:flex-row sm:items-center mb-2">
+                                        <div class="flex items-start justify-between sm:flex-row sm:items-center mb-2 min-h-[40px] sm:min-h-0">
                                             <a href="{{ route('tv.show', $show['id']) }}" class="block flex-1">
-                                                <h2 class="text-sm sm:text-xl font-bold text-white hover:text-purple-500">
+                                                <h2 class="text-sm sm:text-xl font-bold text-white hover:text-purple-500 line-clamp-2 sm:line-clamp-none">
                                                     @if(strlen($show['name']) > 15)
-                                                        {{ substr($show['name'], 0, 15) }}<br>{{ substr($show['name'], 15) }}
+                                                        {{ substr($show['name'], 0, 15) }}<br class="hidden sm:inline">{{ substr($show['name'], 15) }}
                                                     @else
                                                         {{ $show['name'] }}
                                                     @endif
                                                 </h2>
                                             </a>
-                                            <div class="ml-2 transform scale-75 sm:scale-100">
+                                            <div class="ml-2 transform scale-75 sm:scale-100 flex-shrink-0">
                                                 <x-favorite-button :id="$show['id']" type="tv" />
                                             </div>
                                         </div>
@@ -176,6 +176,39 @@ document.addEventListener('DOMContentLoaded', function() {
         once: false,
         mirror: true,
         offset: 50
+    });
+});
+
+// Ajout de la gestion AJAX pour maintenir la mise en page
+window.addEventListener('popstate', function(event) {
+    const genre = new URLSearchParams(window.location.search).get('genre') || '';
+    Alpine.store('shows').filterShows(genre);
+});
+
+document.addEventListener('alpine:init', () => {
+    Alpine.store('shows', {
+        selectedGenre: '{{ request('genre') }}',
+        async filterShows(genre) {
+            try {
+                const response = await fetch(`/tv?genre=${genre}`, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+                
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                
+                const html = await response.text();
+                document.querySelector('.shows-grid').innerHTML = html;
+                
+                window.history.pushState({}, '', `/tv${genre ? `?genre=${genre}` : ''}`);
+                
+                // Réinitialisation des animations après le chargement du contenu
+                AOS.refresh();
+            } catch (error) {
+                console.error('Erreur lors du filtrage:', error);
+            }
+        }
     });
 });
 </script>

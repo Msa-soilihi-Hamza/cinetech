@@ -21,13 +21,14 @@
                                 Peter Quill, encore sous le choc d'une terrible perte, doit rallier son équipe pour une mission dangereuse visant à sauver Rocket.
                             </p>
                             <div class="flex items-center gap-4">
-                                <button class="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-full flex items-center gap-2">
+                                <a href="{{ route('movies.show', 447365) }}" 
+                                   class="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-full flex items-center gap-2">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     </svg>
-                                    Lecture
-                                </button>
+                                    Détails
+                                </a>
                                 <x-favorite-button :id="447365" type="movie" />
                             </div>
                         </x-aos-wrapper>
@@ -51,13 +52,14 @@
                                 Un plombier nommé Mario parcourt un labyrinthe souterrain avec son frère, Luigi, essayant de sauver une princesse capturée.
                             </p>
                             <div class="flex items-center gap-4">
-                                <button class="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-full flex items-center gap-2">
+                                <a href="{{ route('movies.show', 502356) }}" 
+                                   class="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-full flex items-center gap-2">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     </svg>
-                                    Lecture
-                                </button>
+                                    Détails
+                                </a>
                                 <x-favorite-button :id="502356" type="movie" />
                             </div>
                         </x-aos-wrapper>
@@ -81,13 +83,14 @@
                                 Jake Sully et Ney'tiri ont formé une famille et font tout pour rester aussi soudés que possible. Ils sont cependant contraints de quitter leur foyer et d'explorer les différentes régions de Pandora.
                             </p>
                             <div class="flex items-center gap-4">
-                                <button class="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-full flex items-center gap-2">
+                                <a href="{{ route('movies.show', 76600) }}" 
+                                   class="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-full flex items-center gap-2">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     </svg>
-                                    Lecture
-                                </button>
+                                    Détails
+                                </a>
                                 <x-favorite-button :id="76600" type="movie" />
                             </div>
                         </x-aos-wrapper>
