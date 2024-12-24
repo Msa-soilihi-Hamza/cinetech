@@ -182,18 +182,23 @@ document.addEventListener('DOMContentLoaded', function() {
                     })
                     .then(response => response.json())
                     .then(data => {
+                        console.log('Données reçues de l\'API:', data);
                         let html = '';
                         if (data.length > 0) {
                             data.forEach(item => {
-                                const image = item.poster_path 
-                                    ? `https://image.tmdb.org/t/p/w92${item.poster_path}`
-                                    : '/images/no-image.png';
+                                console.log('Item en cours:', item);
+                                const image = item.poster_path;
                                 const title = item.title || item.name;
-                                const year = (item.release_date || item.first_air_date || '').split('-')[0];
+                                const year = item.year || 'Date inconnue';
                                 const type = item.media_type === 'movie' ? 'Film' : 'Série';
-                                const route = item.media_type === 'movie' ? 'movies.show' : 'tv.show';
-                                const rating = item.vote_average ? `${item.vote_average.toFixed(1)}/10` : 'Non noté';
+                                const rating = item.vote_average ? `${item.vote_average}/10` : 'Non noté';
                                 
+                                console.log('Données formatées:', {
+                                    title,
+                                    year,
+                                    rating
+                                });
+
                                 html += `
                                     <a href="${item.media_type === 'movie' ? '/movie/' : '/tv/'}${item.id}" 
                                        class="flex items-start space-x-4 p-4 rounded-lg hover:bg-gray-800 transition-colors mb-4">
@@ -203,15 +208,13 @@ document.addEventListener('DOMContentLoaded', function() {
                                              onerror="this.src='/images/no-image.png'">
                                         <div class="flex-1 min-w-0">
                                             <h3 class="text-white font-semibold text-lg truncate">${title}</h3>
-                                            <div class="flex items-center text-sm text-gray-400 mt-1">
-                                                <span class="inline-flex items-center px-2 py-0.5 rounded bg-gray-800 text-purple-400 mr-2">
+                                            <div class="flex flex-wrap items-center gap-2 mt-1">
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded bg-gray-800 text-purple-400">
                                                     ${type}
                                                 </span>
-                                                <span>${year || 'Date inconnue'}</span>
+                                                <span class="text-sm text-gray-400">${year}</span>
                                             </div>
-                                            <div class="mt-1 text-purple-500 font-medium">
-                                                ${rating}
-                                            </div>
+                                            <p class="text-sm text-gray-400 mt-2 line-clamp-2">${item.overview || 'Aucune description disponible'}</p>
                                         </div>
                                     </a>
                                 `;

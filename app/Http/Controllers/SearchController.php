@@ -187,6 +187,8 @@ class SearchController extends Controller
                         ($item['name'] ?? ''),
                     'media_type' => $item['media_type'],
                     'year' => $this->extractYear($item),
+                    'vote_average' => $item['vote_average'] ?? 0,
+                    'overview' => $item['overview'] ?? '',
                     'poster_path' => $item['poster_path'] ? 
                         'https://image.tmdb.org/t/p/w92' . $item['poster_path'] : 
                         null
