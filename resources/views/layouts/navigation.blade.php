@@ -1,4 +1,18 @@
-<nav class="bg-black border-b border-gray-800 relative z-50">
+<nav class="bg-black border-b border-gray-800 relative z-50"
+     x-data="{ 
+        searchModalOpen: false,
+        closeSearchModal() {
+            this.searchModalOpen = false;
+            document.body.style.overflow = 'auto';
+        },
+        openSearchModal() {
+            this.searchModalOpen = true;
+            document.body.style.overflow = 'hidden';
+            this.$nextTick(() => {
+                this.$refs.mobileSearchInput.focus();
+            });
+        }
+     }">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
             <!-- Logo et Navigation Desktop -->
@@ -43,58 +57,202 @@
                 </div>
             </div>
 
-            <!-- Bouton Menu Mobile et User Menu -->
-            <div class="flex items-center">
-                <!-- User Menu (Desktop) -->
-                <div class="sm:flex sm:items-center">
-                    @auth
-                        <x-dropdown align="right" width="48">
-                            <x-slot name="trigger">
-                                <button class="inline-flex items-center px-3 py-2 text-sm leading-4 font-medium rounded-md text-white hover:text-white focus:outline-none transition ease-in-out duration-150">
-                                    <div class="flex items-center">
-                                        <div>{{ Auth::user()->name }}</div>
-                                        
-                                    </div>
-                                    <div class="ml-1">
-                                        <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                        </svg>
-                                    </div>
-                                </button>
-                            </x-slot>
+            <!-- Bouton de recherche Mobile -->
+            <div class="flex items-center sm:hidden">
+                <button @click="openSearchModal" class="text-white p-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </button>
+            </div>
 
-                            <x-slot name="content">
-                                <x-dropdown-link :href="route('profile.edit')" class="text-gray-700">
-                                    {{ __('Mon Profil') }}
+            <!-- User Menu (Desktop) -->
+            <div class="hidden sm:flex sm:items-center">
+                @auth
+                    <x-dropdown align="right" width="48">
+                        <x-slot name="trigger">
+                            <button class="inline-flex items-center px-3 py-2 text-sm leading-4 font-medium rounded-md text-white hover:text-white focus:outline-none transition ease-in-out duration-150">
+                                <div class="flex items-center">
+                                    <div>{{ Auth::user()->name }}</div>
+                                    
+                                </div>
+                                <div class="ml-1">
+                                    <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                            </button>
+                        </x-slot>
+
+                        <x-slot name="content">
+                            <x-dropdown-link :href="route('profile.edit')" class="text-gray-700">
+                                {{ __('Mon Profil') }}
+                            </x-dropdown-link>
+                           
+
+                            <!-- Authentication -->
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <x-dropdown-link :href="route('logout')"
+                                        onclick="event.preventDefault();
+                                                            this.closest('form').submit();" class="text-gray-700">
+                                    {{ __('Déconnexion') }}
                                 </x-dropdown-link>
-                               
+                            </form>
+                        </x-slot>
+                    </x-dropdown>
+                @else
+                    <div class="hidden sm:flex space-x-4">
+                        <a href="{{ route('login') }}" class="text-white hover:text-white px-3 py-2 rounded-md text-sm">
+                            {{ __('Connexion') }}
+                        </a>
+                        <a href="{{ route('register') }}" class="text-white hover:text-white px-3 py-2 rounded-md text-sm">
+                            {{ __('Inscription') }}
+                        </a>
+                    </div>
+                @endauth
+            </div>
+        </div>
+    </div>
 
-                                <!-- Authentication -->
-                                <form method="POST" action="{{ route('logout') }}">
-                                    @csrf
-                                    <x-dropdown-link :href="route('logout')"
-                                            onclick="event.preventDefault();
-                                                        this.closest('form').submit();" class="text-gray-700">
-                                        {{ __('Déconnexion') }}
-                                    </x-dropdown-link>
-                                </form>
-                            </x-slot>
-                        </x-dropdown>
-                    @else
-                        <div class="flex space-x-4">
-                            <a href="{{ route('login') }}" class="text-white hover:text-white px-3 py-2 rounded-md text-sm">
-                                {{ __('Connexion') }}
-                            </a>
-                            <a href="{{ route('register') }}" class="text-white hover:text-white px-3 py-2 rounded-md text-sm">
-                                {{ __('Inscription') }}
-                            </a>
-                        </div>
-                    @endauth
+    <!-- Modale de recherche Mobile -->
+    <div x-show="searchModalOpen" 
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="fixed inset-0 z-50 bg-gray-900 sm:hidden"
+         style="display: none;">
+        <div class="flex flex-col h-full">
+            <!-- En-tête de la modale -->
+            <div class="flex items-center justify-between p-4 border-b border-gray-800">
+                <h2 class="text-xl font-bold text-white">Rechercher</h2>
+                <button @click="closeSearchModal" class="text-white p-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Formulaire de recherche -->
+            <div class="p-4">
+                <div class="relative">
+                    <input type="text" 
+                           x-ref="mobileSearchInput"
+                           id="mobile-search-input"
+                           class="w-full bg-gray-800 text-white rounded-lg pl-4 pr-10 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                           placeholder="Rechercher un film ou une série..."
+                           autocomplete="off">
+                    <div class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </div>
                 </div>
+            </div>
+
+            <!-- Zone de résultats -->
+            <div id="mobile-search-results" class="flex-1 overflow-y-auto p-4 bg-gray-900">
+                <!-- Les résultats de recherche seront injectés ici -->
             </div>
         </div>
     </div>
 </nav>
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const mobileSearchInput = document.getElementById('mobile-search-input');
+    const mobileSearchResults = document.getElementById('mobile-search-results');
+    let debounceTimer;
+
+    if (mobileSearchInput && mobileSearchResults) {
+        mobileSearchInput.addEventListener('input', function() {
+            clearTimeout(debounceTimer);
+            const query = this.value.trim();
+
+            debounceTimer = setTimeout(() => {
+                if (query.length >= 2) {
+                    fetch(`/search/autocomplete?query=${encodeURIComponent(query)}`, {
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        let html = '';
+                        if (data.length > 0) {
+                            data.forEach(item => {
+                                const image = item.poster_path 
+                                    ? `https://image.tmdb.org/t/p/w92${item.poster_path}`
+                                    : '/images/no-image.png';
+                                const title = item.title || item.name;
+                                const year = (item.release_date || item.first_air_date || '').split('-')[0];
+                                const type = item.media_type === 'movie' ? 'Film' : 'Série';
+                                const route = item.media_type === 'movie' ? 'movies.show' : 'tv.show';
+                                const rating = item.vote_average ? `${item.vote_average.toFixed(1)}/10` : 'Non noté';
+                                
+                                html += `
+                                    <a href="${item.media_type === 'movie' ? '/movie/' : '/tv/'}${item.id}" 
+                                       class="flex items-start space-x-4 p-4 rounded-lg hover:bg-gray-800 transition-colors mb-4">
+                                        <img src="${image}" 
+                                             alt="${title}" 
+                                             class="w-16 h-24 object-cover rounded-lg shadow-lg"
+                                             onerror="this.src='/images/no-image.png'">
+                                        <div class="flex-1 min-w-0">
+                                            <h3 class="text-white font-semibold text-lg truncate">${title}</h3>
+                                            <div class="flex items-center text-sm text-gray-400 mt-1">
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded bg-gray-800 text-purple-400 mr-2">
+                                                    ${type}
+                                                </span>
+                                                <span>${year || 'Date inconnue'}</span>
+                                            </div>
+                                            <div class="mt-1 text-purple-500 font-medium">
+                                                ${rating}
+                                            </div>
+                                        </div>
+                                    </a>
+                                `;
+                            });
+                        } else {
+                            html = `
+                                <div class="text-center py-8">
+                                    <p class="text-gray-400 text-lg">Aucun résultat trouvé pour "${query}"</p>
+                                </div>
+                            `;
+                        }
+                        mobileSearchResults.innerHTML = html;
+                    })
+                    .catch(error => {
+                        console.error('Erreur:', error);
+                        mobileSearchResults.innerHTML = `
+                            <div class="text-center py-8">
+                                <p class="text-red-500">Une erreur est survenue lors de la recherche</p>
+                            </div>
+                        `;
+                    });
+                } else {
+                    mobileSearchResults.innerHTML = `
+                        <div class="text-center py-8">
+                            <p class="text-gray-400">Commencez à taper pour rechercher...</p>
+                        </div>
+                    `;
+                }
+            }, 300);
+        });
+
+        // Message initial
+        mobileSearchResults.innerHTML = `
+            <div class="text-center py-8">
+                <p class="text-gray-400">Commencez à taper pour rechercher...</p>
+            </div>
+        `;
+    }
+});
+</script>
+@endpush
 
 <!-- Navigation Mobile (Bottom) -->
 <nav class="sm:hidden fixed bottom-0 left-0 right-0 bg-gray-800 border-t border-gray-800 z-50">
