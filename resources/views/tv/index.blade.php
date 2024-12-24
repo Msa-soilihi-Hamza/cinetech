@@ -133,9 +133,15 @@
                                     </a>
                                     
                                     <div class="p-2 sm:p-4">
-                                        <div class="flex justify-between items-center mb-2">
+                                        <div class="flex items-start justify-between sm:flex-row sm:items-center mb-2">
                                             <a href="{{ route('tv.show', $show['id']) }}" class="block flex-1">
-                                                <h2 class="text-sm sm:text-xl font-bold text-white hover:text-purple-500 truncate">{{ $show['name'] }}</h2>
+                                                <h2 class="text-sm sm:text-xl font-bold text-white hover:text-purple-500">
+                                                    @if(strlen($show['name']) > 15)
+                                                        {{ substr($show['name'], 0, 15) }}<br>{{ substr($show['name'], 15) }}
+                                                    @else
+                                                        {{ $show['name'] }}
+                                                    @endif
+                                                </h2>
                                             </a>
                                             <div class="ml-2 transform scale-75 sm:scale-100">
                                                 <x-favorite-button :id="$show['id']" type="tv" />
