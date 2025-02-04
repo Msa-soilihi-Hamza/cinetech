@@ -67,7 +67,7 @@ class DashboardController extends Controller
                     $data1['total_results'],
                     30,
                     request('page', 1),
-                    ['path' => route('dashboard'), 'query' => array_filter(['genre' => $genre])]
+                    ['path' => route('film'), 'query' => array_filter(['genre' => $genre])]
                 );
             }
 
@@ -88,6 +88,6 @@ class DashboardController extends Controller
             return view('_movies-grid', compact('movies'))->render();
         }
 
-        return view('dashboard', compact('movies', 'genres'));
+        return view('movies.film', compact('movies', 'genres'));
     }
 } 

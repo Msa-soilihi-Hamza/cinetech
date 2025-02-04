@@ -42,7 +42,7 @@
             this.selectedGenre = genreId;
             try {
                 console.log('Envoi de la requête fetch...');
-                const response = await fetch(`/dashboard?genre=${genreId}`, {
+                const response = await fetch(`/film?genre=${genreId}`, {
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest'
                     }
@@ -56,7 +56,7 @@
                 console.log('Réponse reçue, mise à jour du DOM...');
                 document.querySelector('.movies-grid').innerHTML = html;
                 
-                window.history.pushState({}, '', `/dashboard${genreId ? `?genre=${genreId}` : ''}`);
+                window.history.pushState({}, '', `/film${genreId ? `?genre=${genreId}` : ''}`);
                 
                 AOS.refreshHard();
                 

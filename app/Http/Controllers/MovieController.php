@@ -24,7 +24,7 @@ class MovieController extends Controller
         $movies = collect($movies);
         $tvShows = collect($tvShows);
 
-        return view('movies.movie', compact('movies', 'tvShows'));
+        return view('home', compact('movies', 'tvShows'));
     }
 
     public function show($id)

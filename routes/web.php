@@ -32,8 +32,8 @@ Route::get('/search/autocomplete', [SearchController::class, 'autocomplete'])->n
 
 // Routes protégées
 Route::middleware(['auth'])->group(function () {
-    // Ajout de la route dashboard
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    // Ajout de la route film
+    Route::get('/film', [DashboardController::class, 'index'])->name('film');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

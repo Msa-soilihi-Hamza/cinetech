@@ -160,10 +160,46 @@
         @endif
     </div>
 </div>
+
+<!-- Bouton retour en haut -->
+<button id="back-to-top" 
+        class="fixed bottom-20 right-4 bg-purple-600 text-white p-2 rounded-full shadow-lg cursor-pointer opacity-0 transition-opacity duration-300 hover:bg-purple-700"
+        style="display: none;">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+    </svg>
+</button>
+
 @endsection 
 
 @push('scripts')
 <script src="{{ asset('js/removeFavorite.js') }}"></script>
+
+<script>
+// Gestion du bouton retour en haut
+document.addEventListener('DOMContentLoaded', function() {
+    const backToTopButton = document.getElementById('back-to-top');
+    
+    // Afficher/masquer le bouton en fonction du scroll
+    window.addEventListener('scroll', function() {
+        if (window.scrollY > 300) {
+            backToTopButton.style.display = 'block';
+            setTimeout(() => backToTopButton.style.opacity = '1', 50);
+        } else {
+            backToTopButton.style.opacity = '0';
+            setTimeout(() => backToTopButton.style.display = 'none', 300);
+        }
+    });
+
+    // Action de retour en haut au clic
+    backToTopButton.addEventListener('click', function() {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    });
+});
+</script>
 
 <style>
 .bg-gray-800 {
@@ -176,6 +212,10 @@ html {
 
 .scroll-mt-8 {
     scroll-margin-top: 2rem;
+}
+
+#back-to-top {
+    z-index: 50;
 }
 </style>
 @endpush 
