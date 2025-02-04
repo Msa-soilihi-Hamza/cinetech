@@ -8,6 +8,7 @@ use App\Http\Controllers\SearchController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\TvController;
+use App\Http\Controllers\MoviesController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -33,7 +34,7 @@ Route::get('/search/autocomplete', [SearchController::class, 'autocomplete'])->n
 // Routes protégées
 Route::middleware(['auth'])->group(function () {
     // Ajout de la route film
-    Route::get('/film', [DashboardController::class, 'index'])->name('film');
+    Route::get('/film', [MoviesController::class, 'index'])->name('film');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
