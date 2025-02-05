@@ -55,7 +55,7 @@
 </div>
 
 <!-- Contenu principal -->
-<div class="bg-gray-900 pt-2">
+<div class="bg-gray-900 pt-2 pb-8">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Section Films -->
         <div id="films">
@@ -208,6 +208,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
 @push('styles')
 <style>
+body {
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+
 .splide__track {
     height: calc(100vh - 4rem) !important;
 }
