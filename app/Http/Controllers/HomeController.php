@@ -20,10 +20,46 @@ class HomeController extends Controller
 
     public function index()
     {
-        $popular = $this->tmdbService->getPopularMovies();
-        $trending = $this->tmdbService->getTrendingMovies();
+        // Initialiser les variables avec des collections vides
+        $movies = collect();
+        $tvShows = collect();
 
-        return view('home', compact('popular', 'trending'));
+        try {
+            // Récupérer les films depuis le cache ou l'API
+            $movies = Cache::remember('home_movies', now()->addHours(6), function () {
+                $response = Http::withoutVerifying()
+                    ->get('https://api.themoviedb.org/3/movie/popular', [
+                        'api_key' => env('TMDB_API_KEY'),
+                        'language' => 'fr-FR',
+                        'page' => 1
+                    ]);
+
+                if ($response->successful()) {
+                    return collect($response->json()['results']);
+                }
+                return collect();
+            });
+
+            // Récupérer les séries depuis le cache ou l'API
+            $tvShows = Cache::remember('home_tvshows', now()->addHours(6), function () {
+                $response = Http::withoutVerifying()
+                    ->get('https://api.themoviedb.org/3/tv/popular', [
+                        'api_key' => env('TMDB_API_KEY'),
+                        'language' => 'fr-FR',
+                        'page' => 1
+                    ]);
+
+                if ($response->successful()) {
+                    return collect($response->json()['results']);
+                }
+                return collect();
+            });
+        } catch (\Exception $e) {
+            // Logger l'erreur mais continuer avec des collections vides
+            \Log::error('Erreur lors du chargement de la page d\'accueil: ' . $e->getMessage());
+        }
+
+        return view('home', compact('movies', 'tvShows'));
     }
 
     public function search(Request $request)
@@ -170,6 +206,52 @@ class HomeController extends Controller
                 'currentSection' => $currentSection,
                 'error' => 'Une erreur est survenue lors de la récupération des séries.'
             ]);
+        }
+    }
+
+    public function getMovies()
+    {
+        try {
+            $response = Http::withoutVerifying()
+                ->get('https://api.themoviedb.org/3/movie/popular', [
+                    'api_key' => env('TMDB_API_KEY'),
+                    'language' => 'fr-FR',
+                    'page' => 1
+                ]);
+
+            if ($response->successful()) {
+                $movies = $response->json()['results'];
+                Cache::put('home_movies', $movies, now()->addHours(6));
+                return response()->json($movies);
+            }
+
+            return response()->json([]);
+        } catch (\Exception $e) {
+            \Log::error('Erreur lors de la récupération des films: ' . $e->getMessage());
+            return response()->json(['error' => 'Une erreur est survenue'], 500);
+        }
+    }
+
+    public function getTvShows()
+    {
+        try {
+            $response = Http::withoutVerifying()
+                ->get('https://api.themoviedb.org/3/tv/popular', [
+                    'api_key' => env('TMDB_API_KEY'),
+                    'language' => 'fr-FR',
+                    'page' => 1
+                ]);
+
+            if ($response->successful()) {
+                $tvShows = $response->json()['results'];
+                Cache::put('home_tvshows', $tvShows, now()->addHours(6));
+                return response()->json($tvShows);
+            }
+
+            return response()->json([]);
+        } catch (\Exception $e) {
+            \Log::error('Erreur lors de la récupération des séries: ' . $e->getMessage());
+            return response()->json(['error' => 'Une erreur est survenue'], 500);
         }
     }
 }

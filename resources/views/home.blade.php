@@ -54,113 +54,115 @@
     </div>
 </div>
 
-<!-- Contenu existant -->
+<!-- Contenu principal -->
 <div class="bg-gray-900 pt-2">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Section Films -->
         <div id="films">
-            <x-aos-wrapper animation="fade-down" duration="800">
-                <h1 class="text-3xl font-bold text-white mb-6">Films</h1>
-            </x-aos-wrapper>
+            <h1 class="text-3xl font-bold text-white mb-6">Films</h1>
             
             <div class="mb-8">
-                @if(!empty($movies))
-                    <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
-                        @foreach(array_chunk($movies->toArray(), 8) as $chunkIndex => $chunk)
-                            <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 col-span-full" 
-                                 data-aos="fade-up"
-                                 data-aos-duration="800"
-                                 data-aos-delay="{{ $chunkIndex * 200 }}">
-                                @foreach($chunk as $movie)
-                                    <div class="bg-gray-800 rounded-lg overflow-hidden shadow-lg transition-transform hover:scale-105">
-                                        <a href="{{ route('movies.show', $movie['id']) }}">
-                                            @if($movie['poster_path'])
-                                                <img src="https://image.tmdb.org/t/p/w500{{ $movie['poster_path'] }}"
-                                                     alt="{{ $movie['title'] }}"
-                                                     class="w-full h-[250px] sm:h-[400px] object-cover"
-                                                     loading="lazy">
-                                            @endif
+                <div id="movies-content" class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+                    @if(!empty($movies))
+                        @foreach($movies as $movie)
+                            <div class="bg-gray-800 rounded-lg overflow-hidden shadow-lg transition-transform hover:scale-105">
+                                <a href="{{ route('movies.show', $movie['id']) }}">
+                                    @if($movie['poster_path'])
+                                        <img src="https://image.tmdb.org/t/p/w500{{ $movie['poster_path'] }}"
+                                             alt="{{ $movie['title'] }}"
+                                             class="w-full h-[250px] sm:h-[400px] object-cover"
+                                             loading="lazy">
+                                    @endif
+                                </a>
+                                
+                                <div class="p-2 sm:p-4">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <a href="{{ route('movies.show', $movie['id']) }}" class="block flex-1">
+                                            <h2 class="text-sm sm:text-xl font-bold text-white hover:text-purple-500 break-words sm:truncate">
+                                                @if(strlen($movie['title']) > 15)
+                                                    <span class="sm:hidden">{{ wordwrap($movie['title'], 15, "\n", true) }}</span>
+                                                    <span class="hidden sm:inline">{{ $movie['title'] }}</span>
+                                                @else
+                                                    {{ $movie['title'] }}
+                                                @endif
+                                            </h2>
                                         </a>
-                                        
-                                        <div class="p-2 sm:p-4">
-                                            <div class="flex justify-between items-center mb-2">
-                                                <a href="{{ route('movies.show', $movie['id']) }}" class="block flex-1">
-                                                    <h2 class="text-sm sm:text-xl font-bold text-white hover:text-purple-500 break-words sm:truncate">
-                                                        @if(strlen($movie['title']) > 15)
-                                                            <span class="sm:hidden">{{ wordwrap($movie['title'], 15, "\n", true) }}</span>
-                                                            <span class="hidden sm:inline">{{ $movie['title'] }}</span>
-                                                        @else
-                                                            {{ $movie['title'] }}
-                                                        @endif
-                                                    </h2>
-                                                </a>
-                                                <div class="ml-2 transform scale-75 sm:scale-100">
-                                                    <x-favorite-button :id="$movie['id']" type="movie" />
-                                                </div>
-                                            </div>
-                                            <div class="flex justify-between items-center">
-                                                <span class="text-purple-500 font-bold">{{ number_format($movie['vote_average'], 1) }}/10</span>
-                                                <span class="text-gray-400">{{ \Carbon\Carbon::parse($movie['release_date'])->format('Y') }}</span>
-                                            </div>
+                                        <div class="ml-2 transform scale-75 sm:scale-100">
+                                            <form class="favorite-form" method="POST" action="/favorites">
+                                                @csrf
+                                                <input type="hidden" name="tmdb_id" value="{{ $movie['id'] }}">
+                                                <input type="hidden" name="type" value="movie">
+                                                <button type="submit" class="text-gray-400 hover:text-purple-500 transition-colors">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                                    </svg>
+                                                </button>
+                                            </form>
                                         </div>
                                     </div>
-                                @endforeach
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-purple-500 font-bold">{{ number_format($movie['vote_average'], 1) }}/10</span>
+                                        <span class="text-gray-400">{{ \Carbon\Carbon::parse($movie['release_date'])->format('Y') }}</span>
+                                    </div>
+                                </div>
                             </div>
                         @endforeach
-                    </div>
-                @endif
+                    @endif
+                </div>
             </div>
         </div>
 
+        <!-- Section Séries -->
         <div id="series">
-            <x-aos-wrapper animation="fade-down" duration="800">
-                <h1 class="text-3xl font-bold text-white mb-8">Séries TV</h1>
-            </x-aos-wrapper>
+            <h1 class="text-3xl font-bold text-white mb-8">Séries TV</h1>
             
-            @if(!empty($tvShows))
-                <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
-                    @foreach(array_chunk($tvShows->toArray(), 8) as $chunkIndex => $chunk)
-                        <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 col-span-full" 
-                             data-aos="fade-up"
-                             data-aos-duration="800"
-                             data-aos-delay="{{ $chunkIndex * 200 }}">
-                            @foreach($chunk as $tvShow)
-                                <div class="bg-gray-800 rounded-lg overflow-hidden shadow-lg transition-transform hover:scale-105">
-                                    <a href="{{ route('tv.show', $tvShow['id']) }}">
-                                        @if($tvShow['poster_path'])
-                                            <img src="https://image.tmdb.org/t/p/w500{{ $tvShow['poster_path'] }}"
-                                                 alt="{{ $tvShow['name'] }}"
-                                                 class="w-full h-[250px] sm:h-[400px] object-cover"
-                                                 loading="lazy">
-                                        @endif
+            <div id="tvshows-content" class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+                @if(!empty($tvShows))
+                    @foreach($tvShows as $tvShow)
+                        <div class="bg-gray-800 rounded-lg overflow-hidden shadow-lg transition-transform hover:scale-105">
+                            <a href="{{ route('tv.show', $tvShow['id']) }}">
+                                @if($tvShow['poster_path'])
+                                    <img src="https://image.tmdb.org/t/p/w500{{ $tvShow['poster_path'] }}"
+                                         alt="{{ $tvShow['name'] }}"
+                                         class="w-full h-[250px] sm:h-[400px] object-cover"
+                                         loading="lazy">
+                                @endif
+                            </a>
+                            
+                            <div class="p-2 sm:p-4">
+                                <div class="flex justify-between items-center mb-2">
+                                    <a href="{{ route('tv.show', $tvShow['id']) }}" class="block flex-1">
+                                        <h2 class="text-sm sm:text-xl font-bold text-white hover:text-purple-500 break-words sm:truncate">
+                                            @if(strlen($tvShow['name']) > 15)
+                                                <span class="sm:hidden">{{ wordwrap($tvShow['name'], 15, "\n", true) }}</span>
+                                                <span class="hidden sm:inline">{{ $tvShow['name'] }}</span>
+                                            @else
+                                                {{ $tvShow['name'] }}
+                                            @endif
+                                        </h2>
                                     </a>
-                                    
-                                    <div class="p-2 sm:p-4">
-                                        <div class="flex justify-between items-center mb-2">
-                                            <a href="{{ route('tv.show', $tvShow['id']) }}" class="block flex-1">
-                                                <h2 class="text-sm sm:text-xl font-bold text-white hover:text-purple-500 break-words sm:truncate">
-                                                    @if(strlen($tvShow['name']) > 15)
-                                                        <span class="sm:hidden">{{ wordwrap($tvShow['name'], 15, "\n", true) }}</span>
-                                                        <span class="hidden sm:inline">{{ $tvShow['name'] }}</span>
-                                                    @else
-                                                        {{ $tvShow['name'] }}
-                                                    @endif
-                                                </h2>
-                                            </a>
-                                            <div class="ml-2 transform scale-75 sm:scale-100">
-                                                <x-favorite-button :id="$tvShow['id']" type="tv" />
-                                            </div>
-                                        </div>
-                                        <div class="flex justify-between items-center">
-                                            <span class="text-purple-500 font-bold">{{ number_format($tvShow['vote_average'], 1) }}/10</span>
-                                            <span class="text-gray-400">{{ \Carbon\Carbon::parse($tvShow['first_air_date'])->format('Y') }}</span>
-                                        </div>
+                                    <div class="ml-2 transform scale-75 sm:scale-100">
+                                        <form class="favorite-form" method="POST" action="/favorites">
+                                            @csrf
+                                            <input type="hidden" name="tmdb_id" value="{{ $tvShow['id'] }}">
+                                            <input type="hidden" name="type" value="tv">
+                                            <button type="submit" class="text-gray-400 hover:text-purple-500 transition-colors">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                                </svg>
+                                            </button>
+                                        </form>
                                     </div>
                                 </div>
-                            @endforeach
+                                <div class="flex justify-between items-center">
+                                    <span class="text-purple-500 font-bold">{{ number_format($tvShow['vote_average'], 1) }}/10</span>
+                                    <span class="text-gray-400">{{ \Carbon\Carbon::parse($tvShow['first_air_date'])->format('Y') }}</span>
+                                </div>
+                            </div>
                         </div>
                     @endforeach
-                </div>
-            @endif
+                @endif
+            </div>
         </div>
     </div>
 </div>
@@ -168,12 +170,38 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    AOS.init({
-        duration: 800,
-        once: false,
-        mirror: true,
-        offset: 50
-    });
+    // Initialisation des gestionnaires d'événements des formulaires de favoris
+    function initializeFavoriteForms() {
+        document.querySelectorAll('.favorite-form').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const formData = new FormData(form);
+                const button = form.querySelector('button');
+
+                fetch(form.action, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json',
+                    },
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        button.classList.remove('text-gray-400');
+                        button.classList.add('text-purple-500');
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur:', error);
+                });
+            });
+        });
+    }
+
+    // Initialiser les gestionnaires d'événements
+    initializeFavoriteForms();
 });
 </script>
 @endpush

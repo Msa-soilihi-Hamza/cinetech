@@ -2,7 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ActorController;
+use App\Http\Controllers\HomeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,4 +19,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('/actor/{id}/movies', [ActorController::class, 'getMovies']);
+Route::get('/movies', [HomeController::class, 'getMovies']);
+Route::get('/tvshows', [HomeController::class, 'getTvShows']);
