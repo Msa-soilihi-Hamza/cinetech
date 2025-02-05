@@ -153,7 +153,7 @@
 
         @if($favorites->isEmpty())
             <div class="mt-8 text-center">
-                <a href="{{ route('dashboard') }}" class="inline-block bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors">
+                <a href="{{ route('all.media') }}" class="inline-block bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors">
                     Découvrir des films et séries
                 </a>
             </div>

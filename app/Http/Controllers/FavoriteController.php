@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Utils;
 
 class FavoriteController extends Controller
 {
@@ -41,66 +43,70 @@ class FavoriteController extends Controller
     {
         try {
             $userFavorites = Auth::user()->favorites()->get();
-            
             $favorites = [];
+            $client = Http::withoutVerifying();
 
+            // Préparer toutes les requêtes
             foreach ($userFavorites as $favorite) {
-                Log::info('Tentative de requête TMDB pour:', [
-                    'endpoint' => $favorite->type,
-                    'tmdb_id' => $favorite->tmdb_id
-                ]);
+                $cacheKey = "tmdb_{$favorite->type}_{$favorite->tmdb_id}";
                 
-                $response = Http::withoutVerifying()
-                    ->get("https://api.themoviedb.org/3/{$favorite->type}/{$favorite->tmdb_id}", [
-                        'api_key' => env('TMDB_API_KEY'),
-                        'language' => 'fr-FR',
-                    ]);
+                // Vérifier si les données sont en cache
+                if (Cache::has($cacheKey)) {
+                    $data = Cache::get($cacheKey);
+                    $favorites[] = $this->formatFavoriteData($favorite, $data);
+                } else {
+                    // Faire la requête de manière synchrone pour l'instant
+                    $response = $client->get(
+                        "https://api.themoviedb.org/3/{$favorite->type}/{$favorite->tmdb_id}",
+                        [
+                            'api_key' => env('TMDB_API_KEY'),
+                            'language' => 'fr-FR',
+                        ]
+                    );
 
-                Log::info('Réponse TMDB:', [
-                    'status' => $response->status(),
-                    'body' => $response->json()
-                ]);
-
-                if ($response->successful()) {
-                    $data = $response->json(); // il recupere les données de la requete
-                    
-                    // Debug: voir la réponse de TMDB
-                    Log::info('Réponse TMDB pour ' . $favorite->tmdb_id, $data); // il enregistre les données dans les logs
-
-                    $favorites[] = [
-                        'id' => $favorite->id, // il recupere l'id du favori        
-                        'tmdb_id' => $favorite->tmdb_id, // il recupere l'id de la série ou du film
-                        'type' => $favorite->type, // il recupere le type de média
-                        'title' => $favorite->type === 'movie' ? $data['title'] : $data['name'], // il recupere le titre de la série ou du film
-                        'overview' => $data['overview'] ?? '', // il recupere la description de la série ou du film
-                        'poster_path' => $data['poster_path'] ?? null, // il recupere le chemin de l'affiche de la série ou du film
-                        'vote_average' => $data['vote_average'] ?? 0, // il recupere la note de la série ou du film
-                        'release_date' => $favorite->type === 'movie' ? // il recupere la date de sortie de la série ou du film
-                            ($data['release_date'] ?? null) : // si c'est un film
-                            ($data['first_air_date'] ?? null) // si c'est une série
-                    ];
+                    if ($response->successful()) {
+                        $data = $response->json();
+                        
+                        // Mettre en cache pour 24 heures
+                        Cache::put($cacheKey, $data, now()->addHours(24));
+                        
+                        $favorites[] = $this->formatFavoriteData($favorite, $data);
+                    }
                 }
             }
 
-            // Debug: voir les favoris formatés
-            Log::info('Favoris formatés:', $favorites);
-
-            return view('favorites.index', [ // il retourne la vue des favoris
-                'favorites' => collect($favorites), // il recupere les favoris
-                'totalFavorites' => count($favorites) // il recupere le nombre de favoris
+            return view('favorites.index', [
+                'favorites' => collect($favorites),
+                'totalFavorites' => count($favorites)
             ]);
 
-        } catch (\Exception $e) { // il capture les erreurs
-            Log::error('Erreur dans index:', [ // il enregistre l'erreur dans les logs
-                'message' => $e->getMessage(), // il recupere le message d'erreur
-                'line' => $e->getLine(), // il recupere la ligne d'erreur
-                'file' => $e->getFile() // il recupere le fichier d'erreur
+        } catch (\Exception $e) {
+            Log::error('Erreur dans index:', [
+                'message' => $e->getMessage(),
+                'line' => $e->getLine(),
+                'file' => $e->getFile()
             ]);
 
             return view('favorites.index', [
-                'favorites' => collect()  // il recupere les favoris
+                'favorites' => collect()
             ]);
         }
+    }
+
+    private function formatFavoriteData($favorite, $data)
+    {
+        return [
+            'id' => $favorite->id,
+            'tmdb_id' => $favorite->tmdb_id,
+            'type' => $favorite->type,
+            'title' => $favorite->type === 'movie' ? $data['title'] : $data['name'],
+            'overview' => $data['overview'] ?? '',
+            'poster_path' => $data['poster_path'] ?? null,
+            'vote_average' => $data['vote_average'] ?? 0,
+            'release_date' => $favorite->type === 'movie' ?
+                ($data['release_date'] ?? null) :
+                ($data['first_air_date'] ?? null)
+        ];
     }
 
     public function destroy(Request $request)

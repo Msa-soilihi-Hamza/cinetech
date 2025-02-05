@@ -35,9 +35,11 @@
                     <x-nav-link :href="route('tv.index')" :active="request()->routeIs('tv.*')" class="text-white hover:text-white" data-turbo-frame="content">
                         {{ __('Séries') }}
                     </x-nav-link>
+                    @auth
                     <x-nav-link :href="route('favorites.index')" :active="request()->routeIs('favorites.index')" class="text-white hover:text-white" data-turbo-frame="content">
                         {{ __('Favoris') }}
                     </x-nav-link>
+                    @endauth
                 </div>
             </div>
 
@@ -57,13 +59,41 @@
                 </div>
             </div>
 
-            <!-- Bouton de recherche Mobile -->
-            <div class="flex items-center sm:hidden">
+            <!-- Boutons Mobile (Recherche et Menu) -->
+            <div class="flex items-center sm:hidden space-x-2">
                 <button @click="openSearchModal" class="text-white p-2">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
                 </button>
+
+                @auth
+                <div class="relative" x-data="{ open: false }">
+                    <button @click="open = !open" class="flex items-center px-3 py-2 text-sm font-medium text-white hover:text-white">
+                        <span>{{ Auth::user()->name }}</span>
+                        <svg class="ml-1 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+
+                    <div x-show="open" 
+                         @click.away="open = false"
+                         class="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-gray-800 ring-1 ring-black ring-opacity-5"
+                         style="display: none;">
+                        <div class="py-1">
+                            <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm text-white hover:bg-gray-700">
+                                Mon Profil
+                            </a>
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-white hover:bg-gray-700">
+                                    Déconnexion
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                @endauth
             </div>
 
             <!-- User Menu (Desktop) -->
@@ -282,6 +312,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 </svg>
                 <span class="text-xs mt-1">Séries</span>
             </a>
+            @auth
             <a href="{{ route('favorites.index') }}" 
                class="flex flex-col items-center justify-center {{ request()->routeIs('favorites.*') ? 'text-purple-500' : 'text-white hover:text-purple-400' }}">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -296,6 +327,22 @@ document.addEventListener('DOMContentLoaded', function() {
                 </svg>
                 <span class="text-xs mt-1">Profil</span>
             </a>
+            @else
+            <a href="{{ route('login') }}" 
+               class="flex flex-col items-center justify-center text-white hover:text-purple-400">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                </svg>
+                <span class="text-xs mt-1">Connexion</span>
+            </a>
+            <a href="{{ route('register') }}" 
+               class="flex flex-col items-center justify-center text-white hover:text-purple-400">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                </svg>
+                <span class="text-xs mt-1">Inscription</span>
+            </a>
+            @endauth
         </div>
     </nav>
 </div>
