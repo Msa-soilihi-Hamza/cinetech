@@ -42,7 +42,7 @@ class FavoriteController extends Controller
     public function index()
     {
         try {
-            $userFavorites = Auth::user()->favorites()->get();
+            $userFavorites = Auth::user()->favorites()->orderBy('created_at', 'desc')->get();
             $favorites = [];
             $client = Http::withoutVerifying();
 
