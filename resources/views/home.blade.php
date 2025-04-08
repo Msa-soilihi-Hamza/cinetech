@@ -16,7 +16,7 @@
 </div>
 
 <!-- Hero Section -->
-<div class="relative h-[65vh] sm:h-[calc(100vh-4rem)] bg-gray-900">
+<div class="relative h-[72vh] sm:h-[calc(100vh-4rem)] bg-gray-900">
     <div class="absolute inset-0">
         <div class="relative w-full h-full">
             <iframe
@@ -32,18 +32,15 @@
         </div>
     </div>
 
-    <div class="absolute bottom-0 left-0 right-0 p-8 z-20">
+    <div class="absolute bottom-0 sm:-bottom-20 left-0 right-0 p-4 sm:p-8 z-20">
         <div class="max-w-3xl">
-            <div class="mb-2">
-                <span class="bg-purple-500 text-white px-3 py-1 rounded-md text-sm font-medium">À l'affiche</span>
-            </div>
-            <h1 class="text-4xl sm:text-5xl font-bold text-white mb-4">Vaiana 2</h1>
-            <p class="text-lg text-gray-200 mb-6 line-clamp-2 max-w-2xl">
+            <h1 class="text-3xl sm:text-5xl font-bold text-white mb-2 sm:mb-4">Vaiana 2</h1>
+            <p class="text-base sm:text-lg text-gray-200 mb-4 sm:mb-6 line-clamp-2 max-w-2xl">
                 Après avoir reçu une invitation inattendue de ses ancêtres, Vaiana entreprend un périple qui la conduira jusqu'aux eaux dangereuses situées aux confins des mers du Pacifique.
             </p>
-            <div class="flex items-center gap-4">
+            <div class="flex items-center gap-2 sm:gap-4">
                 <a href="{{ route('movies.show', 277834) }}" 
-                   class="inline-flex items-center bg-purple-500 hover:bg-purple-600 text-white px-6 py-3 rounded-lg text-lg font-medium transition-all duration-300">
+                   class="inline-flex items-center bg-purple-500 hover:bg-purple-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg text-base sm:text-lg font-medium transition-all duration-300">
                     En savoir plus
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" />
