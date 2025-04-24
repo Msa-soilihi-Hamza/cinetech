@@ -115,28 +115,65 @@ class HomeController extends Controller
 
     public function showTVShow($id)
     {
-        $response = Http::withOptions([
-            'verify' => false
-        ])
-        ->get("https://api.themoviedb.org/3/tv/{$id}", [
-            'api_key' => env('TMDB_API_KEY'),
-            'append_to_response' => 'credits',
-            'language' => 'fr-FR'
-        ]);
+        try {
+            // Récupérer les détails de la série avec les crédits
+            $tvResponse = Http::withOptions([
+                'verify' => false
+            ])
+            ->get("https://api.themoviedb.org/3/tv/{$id}", [
+                'api_key' => env('TMDB_API_KEY'),
+                'append_to_response' => 'credits',
+                'language' => 'fr-FR'
+            ]);
 
-        if (!$response->successful()) {
-            abort(404);
+            if (!$tvResponse->successful()) {
+                abort(404);
+            }
+
+            $tvShow = $tvResponse->json();
+            
+            // Récupérer les vidéos en français
+            $frVideosResponse = Http::withOptions([
+                'verify' => false
+            ])
+            ->get("https://api.themoviedb.org/3/tv/{$id}/videos", [
+                'api_key' => env('TMDB_API_KEY'),
+                'language' => 'fr-FR'
+            ]);
+            
+            // Récupérer les vidéos en anglais (au cas où il n'y en aurait pas en français)
+            $enVideosResponse = Http::withOptions([
+                'verify' => false
+            ])
+            ->get("https://api.themoviedb.org/3/tv/{$id}/videos", [
+                'api_key' => env('TMDB_API_KEY'),
+                'language' => 'en-US'
+            ]);
+            
+            // Fusionner les résultats des vidéos
+            $videos = [];
+            if ($frVideosResponse->successful()) {
+                $videos = $frVideosResponse->json()['results'];
+            }
+            
+            if ($enVideosResponse->successful()) {
+                $videos = array_merge($videos, $enVideosResponse->json()['results']);
+            }
+            
+            // Ajouter les vidéos à l'objet tvShow
+            $tvShow['videos'] = ['results' => $videos];
+            
+            $comments = Comment::where('media_type', 'tv')
+                              ->where('media_id', $id)
+                              ->with(['user', 'replies.user'])
+                              ->orderBy('created_at', 'desc')
+                              ->get();
+
+            return view('tv.show', compact('tvShow', 'comments'));
+        } catch (\Exception $e) {
+            \Log::error('Erreur dans HomeController@showTVShow: ' . $e->getMessage());
+            return back()->with('error', 'Une erreur est survenue lors du chargement de la série.');
         }
-
-        $tvShow = $response->json();
-        
-        $comments = Comment::where('media_type', 'tv')
-                          ->where('media_id', $id)
-                          ->with(['user', 'replies.user'])
-                          ->orderBy('created_at', 'desc')
-                          ->get();
-
-        return view('tv.show', compact('tvShow', 'comments'));
     }
 
     public function tvIndex()
