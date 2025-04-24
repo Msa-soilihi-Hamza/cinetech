@@ -73,28 +73,14 @@
                                 </a>
                                 
                                 <div class="p-2 sm:p-4">
-                                    <div class="flex justify-between items-center mb-2">
-                                        <a href="{{ route('movies.show', $movie['id']) }}" class="block flex-1">
-                                            <h2 class="text-sm sm:text-xl font-bold text-white hover:text-purple-500 break-words sm:truncate">
-                                                @if(strlen($movie['title']) > 15)
-                                                    <span class="sm:hidden">{{ wordwrap($movie['title'], 15, "\n", true) }}</span>
-                                                    <span class="hidden sm:inline">{{ $movie['title'] }}</span>
-                                                @else
-                                                    {{ $movie['title'] }}
-                                                @endif
+                                    <div class="flex items-start justify-between mb-2">
+                                        <a href="{{ route('movies.show', $movie['id']) }}" class="block flex-1 max-w-[75%]">
+                                            <h2 class="text-sm sm:text-lg font-bold text-white hover:text-purple-500 break-words">
+                                                {{ \Illuminate\Support\Str::limit($movie['title'], 20) }}
                                             </h2>
                                         </a>
-                                        <div class="ml-2 transform scale-75 sm:scale-100">
-                                            <form class="favorite-form" method="POST" action="/favorites">
-                                                @csrf
-                                                <input type="hidden" name="tmdb_id" value="{{ $movie['id'] }}">
-                                                <input type="hidden" name="type" value="movie">
-                                                <button type="submit" class="text-gray-400 hover:text-purple-500 transition-colors">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                                                    </svg>
-                                                </button>
-                                            </form>
+                                        <div class="ml-2">
+                                            <x-favorite-button :id="$movie['id']" type="movie" />
                                         </div>
                                     </div>
                                     <div class="flex justify-between items-center">
@@ -127,28 +113,14 @@
                             </a>
                             
                             <div class="p-2 sm:p-4">
-                                <div class="flex justify-between items-center mb-2">
-                                    <a href="{{ route('tv.show', $tvShow['id']) }}" class="block flex-1">
-                                        <h2 class="text-sm sm:text-xl font-bold text-white hover:text-purple-500 break-words sm:truncate">
-                                            @if(strlen($tvShow['name']) > 15)
-                                                <span class="sm:hidden">{{ wordwrap($tvShow['name'], 15, "\n", true) }}</span>
-                                                <span class="hidden sm:inline">{{ $tvShow['name'] }}</span>
-                                            @else
-                                                {{ $tvShow['name'] }}
-                                            @endif
+                                <div class="flex items-start justify-between mb-2">
+                                    <a href="{{ route('tv.show', $tvShow['id']) }}" class="block flex-1 max-w-[75%]">
+                                        <h2 class="text-sm sm:text-lg font-bold text-white hover:text-purple-500 break-words">
+                                            {{ \Illuminate\Support\Str::limit($tvShow['name'], 20) }}
                                         </h2>
                                     </a>
-                                    <div class="ml-2 transform scale-75 sm:scale-100">
-                                        <form class="favorite-form" method="POST" action="/favorites">
-                                            @csrf
-                                            <input type="hidden" name="tmdb_id" value="{{ $tvShow['id'] }}">
-                                            <input type="hidden" name="type" value="tv">
-                                            <button type="submit" class="text-gray-400 hover:text-purple-500 transition-colors">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                                                </svg>
-                                            </button>
-                                        </form>
+                                    <div class="ml-2">
+                                        <x-favorite-button :id="$tvShow['id']" type="tv" />
                                     </div>
                                 </div>
                                 <div class="flex justify-between items-center">
@@ -163,45 +135,6 @@
         </div>
     </div>
 </div>
-
-@push('scripts')
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Initialisation des gestionnaires d'événements des formulaires de favoris
-    function initializeFavoriteForms() {
-        document.querySelectorAll('.favorite-form').forEach(form => {
-            form.addEventListener('submit', function(e) {
-                e.preventDefault();
-                const formData = new FormData(form);
-                const button = form.querySelector('button');
-
-                fetch(form.action, {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                        'Accept': 'application/json',
-                    },
-                    body: formData
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        button.classList.remove('text-gray-400');
-                        button.classList.add('text-purple-500');
-                    }
-                })
-                .catch(error => {
-                    console.error('Erreur:', error);
-                });
-            });
-        });
-    }
-
-    // Initialiser les gestionnaires d'événements
-    initializeFavoriteForms();
-});
-</script>
-@endpush
 
 @push('styles')
 <style>

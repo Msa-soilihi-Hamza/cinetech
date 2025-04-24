@@ -21,18 +21,13 @@
                         </a>
                         
                         <div class="p-2 sm:p-4">
-                            <div class="flex justify-between items-center mb-2">
-                                <a href="{{ route('movies.show', $movie['id']) }}" class="block flex-1">
-                                    <h2 class="text-sm sm:text-xl font-bold text-white hover:text-purple-500 break-words sm:truncate">
-                                        @if(strlen($movie['title']) > 15)
-                                            <span class="sm:hidden">{{ wordwrap($movie['title'], 15, "\n", true) }}</span>
-                                            <span class="hidden sm:inline">{{ $movie['title'] }}</span>
-                                        @else
-                                            {{ $movie['title'] }}
-                                        @endif
+                            <div class="flex items-start justify-between mb-2">
+                                <a href="{{ route('movies.show', $movie['id']) }}" class="block flex-1 max-w-[75%]">
+                                    <h2 class="text-sm sm:text-lg font-bold text-white hover:text-purple-500 break-words">
+                                        {{ \Illuminate\Support\Str::limit($movie['title'], 20) }}
                                     </h2>
                                 </a>
-                                <div class="ml-2 transform scale-75 sm:scale-100">
+                                <div class="ml-2">
                                     <x-favorite-button :id="$movie['id']" type="movie" />
                                 </div>
                             </div>

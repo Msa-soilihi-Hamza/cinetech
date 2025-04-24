@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Schema;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -24,6 +25,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        // Définir la longueur par défaut des chaînes de caractères
+        Schema::defaultStringLength(191);
+        
         Http::macro('tmdb', function () {
             return Http::withOptions([
                 'verify' => false
