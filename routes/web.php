@@ -50,4 +50,14 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/comments/{comment}', [CommentController::class, 'show'])->name('comments.show');
 });
 
+// Routes d'administration
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
+    Route::get('/', function () {
+        return redirect()->route('admin.users.index');
+    })->name('dashboard');
+    
+    // Gestion des utilisateurs
+    Route::resource('users', App\Http\Controllers\Admin\UserController::class);
+});
+
 require __DIR__.'/auth.php';
