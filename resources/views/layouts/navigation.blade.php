@@ -39,6 +39,11 @@
                     <x-nav-link :href="route('favorites.index')" :active="request()->routeIs('favorites.index')" class="text-white hover:text-white" data-turbo-frame="content">
                         {{ __('Favoris') }}
                     </x-nav-link>
+                    @if(Auth::user()->isAdmin())
+                    <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.*')" class="text-white hover:text-white" data-turbo-frame="content">
+                        {{ __('Administration') }}
+                    </x-nav-link>
+                    @endif
                     @endauth
                 </div>
             </div>
@@ -327,6 +332,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 </svg>
                 <span class="text-xs mt-1">Profil</span>
             </a>
+            @if(Auth::user()->isAdmin())
+            <a href="{{ route('admin.dashboard') }}" 
+               class="flex flex-col items-center justify-center {{ request()->routeIs('admin.*') ? 'text-purple-500' : 'text-white hover:text-purple-400' }}">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                </svg>
+                <span class="text-xs mt-1">Administration</span>
+            </a>
+            @endif
             @else
             <a href="{{ route('login') }}" 
                class="flex flex-col items-center justify-center text-white hover:text-purple-400">
@@ -346,4 +360,3 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
     </nav>
 </div>
-
