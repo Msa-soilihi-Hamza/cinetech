@@ -6,9 +6,9 @@
         <div class="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
             {{-- Image de fond --}}
             <div class="relative h-100">
-                @if(isset($tvShow['backdrop_path']) && $tvShow['backdrop_path'])
-                    <img src="https://image.tmdb.org/t/p/original{{ $tvShow['backdrop_path'] }}"
-                         alt="{{ $tvShow['name'] ?? '' }}"
+                @if(isset($tvShow->backdrop_path) && $tvShow->backdrop_path)
+                    <img src="https://image.tmdb.org/t/p/original{{ $tvShow->backdrop_path }}"
+                         alt="{{ $tvShow->name ?? '' }}"
                          class="w-full h-full object-cover">
                     <div class="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent"></div>
                 @endif
@@ -19,29 +19,29 @@
                 <div class="flex flex-col md:flex-row gap-8">
                     {{-- Affiche --}}
                     <div class="flex-shrink-0 w-full md:w-1/3">
-                        @if(isset($tvShow['poster_path']))
-                            <img src="https://image.tmdb.org/t/p/w500{{ $tvShow['poster_path'] }}"
-                                 alt="{{ $tvShow['name'] }}"
+                        @if(isset($tvShow->poster_path))
+                            <img src="https://image.tmdb.org/t/p/w500{{ $tvShow->poster_path }}"
+                                 alt="{{ $tvShow->name }}"
                                  class="w-full rounded-lg shadow-xl">
                         @endif
                     </div>
 
                     {{-- Informations --}}
                     <div class="flex-grow text-white">
-                        <h1 class="text-4xl font-bold mb-4">{{ $tvShow['name'] }}</h1>
+                        <h1 class="text-4xl font-bold mb-4">{{ $tvShow->name }}</h1>
                         
                         <div class="flex flex-wrap items-center gap-4 mb-6">
                             <span class="text-purple-500 font-bold text-xl">
-                                {{ number_format($tvShow['vote_average'], 1) }}/10
+                                {{ number_format($tvShow->vote_average, 1) }}/10
                             </span>
-                            @if(isset($tvShow['first_air_date']))
+                            @if(isset($tvShow->first_air_date))
                                 <span class="text-gray-400">
-                                    {{ \Carbon\Carbon::parse($tvShow['first_air_date'])->format('d/m/Y') }}
+                                    {{ \Carbon\Carbon::parse($tvShow->first_air_date)->format('d/m/Y') }}
                                 </span>
                             @endif
-                            @if(isset($tvShow['genres']))
+                            @if(isset($tvShow->genres))
                                 <div class="flex flex-wrap gap-2">
-                                    @foreach($tvShow['genres'] as $genre)
+                                    @foreach($tvShow->genres as $genre)
                                         <span class="px-3 py-1 bg-gray-700 rounded-full text-sm">
                                             {{ $genre['name'] }}
                                         </span>
@@ -50,120 +50,92 @@
                             @endif
                         </div>
 
-                        @if(isset($tvShow['overview']))
-                            <div class="mb-8">
-                                <h2 class="text-xl font-semibold mb-2">Synopsis</h2>
-                                <p class="text-gray-300 leading-relaxed">{{ $tvShow['overview'] }}</p>
-                            </div>
+                        <div class="flex items-center gap-4 mb-6">
+                            <x-tv-favorite-button :id="$tvShow->id" />
+                        </div>
+
+                        @if(isset($tvShow->overview))
+                            <p class="text-gray-300 leading-relaxed mb-8">{{ $tvShow->overview }}</p>
                         @endif
 
-                        @if(isset($tvShow['credits']['cast']))
+                        @if(isset($credits) && isset($credits['cast']))
                             <div class="cast-section mb-8">
                                 <h2 class="text-xl font-semibold mb-4">Distribution principale</h2>
                                 <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                                    @foreach(array_slice($tvShow['credits']['cast'], 0, 8) as $actor)
-                                        <div class="bg-gray-700 rounded-lg overflow-hidden shadow-lg hover:bg-gray-600 transition-colors cursor-pointer"
-                                             onclick="showActorFilmography({{ $actor['id'] }}, '{{ $actor['name'] }}')">
-                                            <div class="relative w-42 h-43 mx-auto mb-3">
-                                                @if(isset($actor['profile_path']))
-                                                    <img src="https://image.tmdb.org/t/p/w185{{ $actor['profile_path'] }}"
-                                                         alt="{{ $actor['name'] }}"
-                                                         class="w-full h-full object-cover">
-                                                @else
-                                                    <div class="w-full h-full rounded-lg bg-gray-800 flex items-center justify-center">
-                                                        <span class="text-gray-400 text-3xl">?</span>
-                                                    </div>
-                                                @endif
-                                            </div>
-                                            <div class="p-4">
-                                                <p class="font-semibold truncate">{{ $actor['name'] }}</p>
-                                                <p class="text-sm text-gray-400 truncate">{{ $actor['character'] }}</p>
+                                    @foreach(array_slice($credits['cast'], 0, 8) as $actor)
+                                        <div class="group">
+                                            @if(isset($actor['profile_path']))
+                                                <img src="https://image.tmdb.org/t/p/w300{{ $actor['profile_path'] }}"
+                                                     alt="{{ $actor['name'] }}"
+                                                     class="w-full rounded-lg shadow-lg transition-transform duration-200 group-hover:scale-105">
+                                            @else
+                                                <div class="w-full h-48 bg-gray-700 rounded-lg flex items-center justify-center">
+                                                    <span class="text-gray-400">Aucune image</span>
+                                                </div>
+                                            @endif
+                                            <div class="mt-2 text-center">
+                                                <h3 class="font-semibold text-gray-200">{{ $actor['name'] }}</h3>
+                                                <p class="text-sm text-gray-400">{{ $actor['character'] ?? 'Non spécifié' }}</p>
                                             </div>
                                         </div>
                                     @endforeach
                                 </div>
-
-                                @if(count($tvShow['credits']['cast']) > 8)
-                                    <div class="mt-4 text-center">
-                                        <button onclick="showAllCast()" class="text-purple-500 hover:text-purple-400 transition-colors">
-                                            Voir tous les acteurs ({{ count($tvShow['credits']['cast']) }})
-                                        </button>
-                                    </div>
-                                @endif
                             </div>
+                        @endif
 
-                            <!-- Modal pour tous les acteurs -->
-                            <div id="castModal" class="hidden fixed inset-0 bg-black bg-opacity-75 z-40">
-                                <div class="container mx-auto h-full overflow-y-auto py-8">
-                                    <div class="bg-gray-800 p-6 rounded-lg max-w-4xl mx-auto">
-                                        <div class="flex justify-between items-center mb-6">
-                                            <h3 class="text-2xl font-bold">Distribution complète</h3>
-                                            <button onclick="hideCastModal()" class="text-gray-400 hover:text-white">
-                                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                                                </svg>
-                                            </button>
-                                        </div>
-                                        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                                            @foreach($tvShow['credits']['cast'] as $actor)
-                                                <div class="bg-gray-700 p-4 rounded-lg hover:bg-gray-600 transition-colors cursor-pointer"
-                                                     onclick="showActorFilmography({{ $actor['id'] }}, '{{ $actor['name'] }}')">
-                                                    <div class="relative w-28 h-28 mx-auto mb-3">
-                                                        @if(isset($actor['profile_path']))
-                                                            <img src="https://image.tmdb.org/t/p/w185{{ $actor['profile_path'] }}"
-                                                                 alt="{{ $actor['name'] }}"
-                                                                 class="w-full h-full rounded-lg object-cover object-center shadow-lg">
-                                                        @else
-                                                            <div class="w-full h-full rounded-lg bg-gray-800 flex items-center justify-center">
-                                                                <span class="text-gray-400 text-3xl">?</span>
-                                                            </div>
-                                                        @endif
-                                                    </div>
-                                                    <p class="font-semibold truncate">{{ $actor['name'] }}</p>
-                                                    <p class="text-sm text-gray-400 truncate">{{ $actor['character'] }}</p>
+                        @if(isset($credits) && isset($credits['crew']))
+                            <div class="crew-section mb-8">
+                                <h2 class="text-xl font-semibold mb-4">Équipe technique</h2>
+                                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                                    @foreach(array_slice($credits['crew'], 0, 8) as $crewMember)
+                                        <div class="group">
+                                            @if(isset($crewMember['profile_path']))
+                                                <img src="https://image.tmdb.org/t/p/w300{{ $crewMember['profile_path'] }}"
+                                                     alt="{{ $crewMember['name'] }}"
+                                                     class="w-full rounded-lg shadow-lg transition-transform duration-200 group-hover:scale-105">
+                                            @else
+                                                <div class="w-full h-48 bg-gray-700 rounded-lg flex items-center justify-center">
+                                                    <span class="text-gray-400">Aucune image</span>
                                                 </div>
-                                            @endforeach
+                                            @endif
+                                            <div class="mt-2 text-center">
+                                                <h3 class="font-semibold text-gray-200">{{ $crewMember['name'] }}</h3>
+                                                <p class="text-sm text-gray-400">{{ $crewMember['job'] ?? 'Non spécifié' }}</p>
+                                            </div>
                                         </div>
-                                    </div>
+                                    @endforeach
                                 </div>
                             </div>
                         @endif
 
+                        @php
+                            // Filtrer pour obtenir toutes les bandes-annonces YouTube
+                            $trailers = collect($tvShow->videos->results ?? [])->filter(function($video) {
+                                return $video['type'] === 'Trailer' && $video['site'] === 'YouTube';
+                            })->take(4);
+                        @endphp
+
                         <div class="mt-8">
                             <h2 class="text-2xl font-semibold text-gray-200 mb-4">Bandes Annonces</h2>
-                            @if(isset($tvShow['videos']) && !empty($tvShow['videos']['results']))
+                            @if(isset($trailers) && !empty($trailers))
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    @php
-                                        // Filtrer pour obtenir toutes les bandes-annonces YouTube
-                                        $trailers = collect($tvShow['videos']['results'])->filter(function($video) {
-                                            return $video['type'] === 'Trailer' && $video['site'] === 'YouTube';
-                                        })->take(4);
-                                        
-                                        // Prioriser les bandes-annonces en français
-                                        $frenchTrailers = $trailers->filter(function($video) {
-                                            return $video['iso_639_1'] === 'fr';
-                                        });
-                                        
-                                        // Combiner les bandes-annonces françaises et autres
-                                        $finalTrailers = $frenchTrailers->merge($trailers)->unique('key')->take(4);
-                                    @endphp
-                                    
-                                    @forelse($finalTrailers as $trailer)
-                                        <div class="aspect-w-16 aspect-h-9">
-                                            <iframe 
-                                                src="https://www.youtube.com/embed/{{ $trailer['key'] }}" 
-                                                frameborder="0" 
-                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                                                allowfullscreen
-                                                class="w-full rounded-lg shadow-lg"
-                                            ></iframe>
+                                    @foreach($trailers as $trailer)
+                                        <div class="relative group">
+                                            <img src="https://img.youtube.com/vi/{{ $trailer['key'] }}/hqdefault.jpg"
+                                                 alt="{{ $trailer['name'] }}"
+                                                 class="w-full rounded-lg shadow-lg">
+                                            <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                                <a href="https://www.youtube.com/watch?v={{ $trailer['key'] }}"
+                                                   target="_blank"
+                                                   class="text-white text-xl">
+                                                    <i class="fas fa-play-circle"></i>
+                                                </a>
+                                            </div>
                                         </div>
-                                    @empty
-                                        <p class="text-gray-400 col-span-2">Aucune bande annonce disponible</p>
-                                    @endforelse
+                                    @endforeach
                                 </div>
                             @else
-                                <p class="text-gray-400">Aucune bande annonce disponible</p>
+                                <p class="text-gray-400">Aucune bande-annonce disponible.</p>
                             @endif
                         </div>
                     </div>
@@ -171,190 +143,49 @@
             </div>
         </div>
 
-        <!-- Modal Filmographie -->
-        <div id="filmographyModal" class="hidden fixed inset-0 bg-black bg-opacity-75 z-50 overflow-y-auto">
-            <div class="min-h-screen px-4 text-center">
-                <div class="fixed inset-0 transition-opacity" aria-hidden="true" onclick="hideFilmographyModal()">
-                    <div class="absolute inset-0 bg-gray-900 opacity-75"></div>
-                </div>
-
-                <span class="inline-block h-screen align-middle" aria-hidden="true">&#8203;</span>
-
-                <div class="inline-block w-full max-w-6xl p-6 my-8 text-left align-middle transition-all transform bg-gray-800 shadow-xl rounded-lg">
-                    <div class="flex justify-between items-center mb-6 border-b border-gray-700 pb-4">
-                        <h3 class="text-2xl font-bold text-white" id="actorName"></h3>
-                        <button onclick="hideFilmographyModal()" class="text-gray-400 hover:text-white transition-colors">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                            </svg>
-                        </button>
-                    </div>
-
-                    <div id="filmographyContent" class="mt-4">
-                        <div class="flex items-center justify-center py-12">
-                            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        {{-- Section commentaires --}}
-        <div class="mt-8 bg-gray-800 rounded-lg shadow-lg p-6">
+        {{-- Section favoris --}}
+        {{-- <div class="mt-8 bg-gray-800 rounded-lg shadow-lg p-6">
             <div class="container mx-auto">
-                <h2 class="text-2xl font-bold text-white mb-6">Commentaires</h2>
+                <h2 class="text-2xl font-bold text-white mb-6">Ajouter aux favoris</h2>
 
-                {{-- Formulaire d'ajout de commentaire --}}
                 @auth
-                    <form action="{{ route('comments.store') }}" method="POST" class="mb-8">
+                    <form action="{{ route('favorites.store') }}" method="POST" class="mb-8">
                         @csrf
                         <input type="hidden" name="media_type" value="tv">
-                        <input type="hidden" name="media_id" value="{{ $tvShow['id'] }}">
-                        
-                        <div class="mb-4">
-                            <textarea 
-                                name="content" 
-                                rows="3" 
-                                class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
-                                placeholder="Ajouter un commentaire..."></textarea>
-                        </div>
-                        
-                        <button type="submit" class="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
-                            Publier
+                        <input type="hidden" name="media_id" value="{{ $tvShow->id }}">
+                        <button type="submit" 
+                                class="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
+                            Ajouter aux favoris
                         </button>
                     </form>
-                @else
-                    <div class="text-center mb-8">
-                        <p class="text-gray-300">
-                            <a href="{{ route('login') }}" class="text-purple-500 hover:underline">Connectez-vous</a> 
-                            pour laisser un commentaire
-                        </p>
-                    </div>
                 @endauth
+            </div>
+        </div> --}}
+    </div>
+</div>
 
-                {{-- Messages de succès/erreur --}}
-                @if(session('success'))
-                    <div class="bg-green-500 text-white p-4 rounded-lg mb-4">
-                        {{ session('success') }}
-                    </div>
-                @endif
+<!-- Modal Filmographie -->
+<div id="filmographyModal" class="hidden fixed inset-0 bg-black bg-opacity-75 z-50 overflow-y-auto">
+    <div class="min-h-screen px-4 text-center">
+        <div class="fixed inset-0 transition-opacity" aria-hidden="true" onclick="hideFilmographyModal()">
+            <div class="absolute inset-0 bg-gray-900 opacity-75"></div>
+        </div>
 
-                @if($errors->any())
-                    <div class="bg-red-500 text-white p-4 rounded-lg mb-4">
-                        <ul>
-                            @foreach($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
+        <span class="inline-block h-screen align-middle" aria-hidden="true">&#8203;</span>
 
-                {{-- Liste des commentaires --}}
-                <div class="space-y-4">
-                    @if($comments->isNotEmpty())
-                        @foreach($comments as $comment)
-                            <div class="bg-gray-700 rounded-lg p-4">
-                                <div class="flex justify-between items-start">
-                                    <div>
-                                        <h4 class="font-bold text-white">{{ $comment->user->name }}</h4>
-                                        <p class="text-sm text-gray-400">{{ $comment->created_at->diffForHumans() }}</p>
-                                    </div>
-                                    
-                                    @if(Auth::id() === $comment->user_id)
-                                        <form action="{{ route('comments.destroy', $comment) }}" method="POST" class="inline">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="text-red-500 hover:text-red-600">
-                                                Supprimer
-                                            </button>
-                                        </form>
-                                    @endif
-                                </div>
-                                
-                                <p class="mt-2 text-gray-300">{{ $comment->content }}</p>
+        <div class="inline-block w-full max-w-6xl p-6 my-8 text-left align-middle transition-all transform bg-gray-800 shadow-xl rounded-lg">
+            <div class="flex justify-between items-center mb-6 border-b border-gray-700 pb-4">
+                <h3 class="text-2xl font-bold text-white" id="actorName"></h3>
+                <button onclick="hideFilmographyModal()" class="text-gray-400 hover:text-white transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
 
-                                <!-- Ajout du système de réponse -->
-                                @auth
-                                    <button onclick="toggleReplyForm({{ $comment->id }})" 
-                                            class="text-purple-500 hover:text-purple-600 text-sm mt-3 flex items-center gap-2 transition-colors">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
-                                        </svg>
-                                        Répondre
-                                    </button>
-
-                                    <div id="reply-form-{{ $comment->id }}" class="mt-3 hidden">
-                                        <form action="{{ route('comments.reply', $comment) }}" method="POST" 
-                                              class="bg-gray-750 p-4 rounded-lg border border-gray-600">
-                                            @csrf
-                                            <textarea 
-                                                name="content" 
-                                                rows="2" 
-                                                class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
-                                                placeholder="Votre réponse..."
-                                                required></textarea>
-                                            <div class="mt-3 flex gap-2">
-                                                <button type="submit" 
-                                                        class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors flex items-center gap-2">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                                                    </svg>
-                                                    Envoyer
-                                                </button>
-                                                <button type="button" 
-                                                        onclick="toggleReplyForm({{ $comment->id }})" 
-                                                        class="px-4 py-2 text-gray-400 hover:text-white border border-gray-600 rounded-lg hover:bg-gray-700 transition-colors">
-                                                    Annuler
-                                                </button>
-                                            </div>
-                                        </form>
-                                    </div>
-                                @endauth
-
-                                <!-- Affichage des réponses -->
-                                @if($comment->replies->count() > 0)
-                                    <div class="ml-8 mt-4 space-y-3 border-l-2 border-purple-500 pl-4">
-                                        @foreach($comment->replies as $reply)
-                                            <div class="bg-gray-800 rounded-lg p-4 shadow-lg transform hover:scale-[1.02] transition-transform">
-                                                <div class="flex justify-between items-start">
-                                                    <div class="flex items-center gap-2">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
-                                                        </svg>
-                                                        
-                                                        <div>
-                                                            <h5 class="font-bold text-white flex items-center gap-2">
-                                                                {{ $reply->user->name }}
-                                                                <span class="text-xs text-purple-400 font-normal">Réponse</span>
-                                                            </h5>
-                                                            <p class="text-xs text-gray-400">{{ $reply->created_at->diffForHumans() }}</p>
-                                                        </div>
-                                                    </div>
-                                                    
-                                                    @if(Auth::id() === $reply->user_id)
-                                                        <form action="{{ route('comments.destroy', $reply) }}" method="POST" class="inline">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                            <button type="submit" 
-                                                                    class="text-red-500 hover:text-red-600 text-sm bg-gray-700 px-2 py-1 rounded-lg transition-colors">
-                                                                Supprimer
-                                                            </button>
-                                                        </form>
-                                                    @endif
-                                                </div>
-                                                
-                                                <div class="mt-2 text-gray-300 bg-gray-750 p-3 rounded-lg">
-                                                    {{ $reply->content }}
-                                                </div>
-                                            </div>
-                                        @endforeach
-                                    </div>
-                                @endif
-                            </div>
-                        @endforeach
-                    @else
-                        <p class="text-center text-gray-400">Aucun commentaire pour le moment. Soyez le premier à commenter !</p>
-                    @endif
+            <div id="filmographyContent" class="mt-4">
+                <div class="flex items-center justify-center py-12">
+                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500"></div>
                 </div>
             </div>
         </div>

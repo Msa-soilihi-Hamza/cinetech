@@ -11,21 +11,16 @@ return new class extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::create('comments', function (Blueprint $table) {
             $table->id();
-            $table->text('content');
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->string('media_type'); // Pour distinguer entre 'movie' et 'series'
-            $table->unsignedBigInteger('media_id'); // ID du film ou de la série depuis l'API
-            $table->unsignedBigInteger('parent_id')->nullable(); // Pour les réponses aux commentaires
-            
+            $table->text('content');
+            $table->string('media_type');
+            $table->integer('media_id');
+            $table->foreignId('parent_id')->nullable()->constrained('comments')->onDelete('cascade');
             $table->timestamps();
-            
-            // Index pour améliorer les performances
-            $table->index(['media_type', 'media_id']);
-            $table->index('parent_id');
         });
     }
 

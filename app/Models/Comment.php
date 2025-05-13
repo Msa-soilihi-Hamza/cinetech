@@ -5,22 +5,39 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class Comment extends Model
 {
     protected $fillable = [
-        'content',
         'user_id',
+        'content',
         'media_type',
         'media_id',
-        'parent_id',
-       
+        'parent_id'
+    ];
+
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+        'parent_id' => 'integer'
     ];
 
     // Relation avec l'utilisateur
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function getCommentableType()
+    {
+        return $this->media_type === 'movie' ? 'App\Models\Movie' : 'App\Models\TVShow';
+    }
+
+    // Relation polymorphique avec le contenu commenté
+    public function commentable(): MorphTo
+    {
+        return $this->morphTo();
     }
 
     // Relation avec les réponses

@@ -25,8 +25,13 @@ use Illuminate\Support\Facades\Route;
 // Route publique pour la page d'accueil
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/search', [HomeController::class, 'search'])->name('search');
+
+// Routes pour les films
 Route::get('/movie/{id}', [HomeController::class, 'showMovie'])->name('movies.show');
+
+// Routes pour les séries
 Route::get('/tv/{id}', [HomeController::class, 'showTVShow'])->name('tv.show');
+
 Route::get('/tv', [TvController::class, 'index'])->name('tv.index');
 Route::get('/films-et-series', [MovieController::class, 'allMedia'])->name('all.media');
 Route::get('/search/autocomplete', [SearchController::class, 'autocomplete'])->name('search.autocomplete');
@@ -34,20 +39,15 @@ Route::get('/film', [MoviesController::class, 'index'])->name('film');
 
 // Routes protégées
 Route::middleware(['auth'])->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-
+    // Routes pour les favoris
     Route::post('/favorites', [FavoriteController::class, 'store'])->name('favorites.store');
     Route::get('/favorites', [FavoriteController::class, 'index'])->name('favorites.index');
     Route::delete('/favorites/destroy', [FavoriteController::class, 'destroy'])->name('favorites.destroy');
+    Route::get('/favorites/check', [FavoriteController::class, 'check'])->name('favorites.check');
 
-    Route::post('/comments', [CommentController::class, 'store'])->name('comments.store');
-    Route::post('/comments/{comment}/reply', [CommentController::class, 'reply'])->name('comments.reply');
-    Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
-
-    Route::get('/comments', [CommentController::class, 'index'])->name('comments.index');
-    Route::get('/comments/{comment}', [CommentController::class, 'show'])->name('comments.show');
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
 // Routes d'administration
@@ -58,6 +58,9 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     
     // Gestion des utilisateurs
     Route::resource('users', App\Http\Controllers\Admin\UserController::class);
+
+    // Gestion des commentaires
+    Route::resource('comments', App\Http\Controllers\Admin\CommentController::class);
 });
 
 require __DIR__.'/auth.php';

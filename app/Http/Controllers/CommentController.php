@@ -6,6 +6,7 @@ use App\Models\Comment;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class CommentController extends Controller
 {
@@ -14,49 +15,41 @@ class CommentController extends Controller
         $this->middleware('auth')->except(['index', 'show']);
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request)
     {
-        $validated = $request->validate([
-            'content' => [
-                'required',
-                'string',
-                'min:2',
-                'max:1000',
-                'not_regex:/^[\s]*$/',
-            ],
-            'media_type' => [
-                'required',
-                'string',
-                'in:movie,tv'
-            ],
-            'media_id' => [
-                'required',
-                'integer',
-                'min:1'
-            ],
-            'parent_id' => [
-                'nullable',
-                'exists:comments,id',
-                function ($attribute, $value, $fail) {
-                    if ($value) {
-                        $parentComment = Comment::find($value);
-                        if ($parentComment && $parentComment->parent_id) {
-                            $fail('Les réponses imbriquées ne sont pas autorisées.');
-                        }
-                    }
-                }
-            ]
-        ]);
+        try {
+            // Validation des données
+            $validated = $request->validate([
+                'content' => 'required|string|max:1000',
+                'commentable_type' => 'required|string',
+                'commentable_id' => 'required|integer',
+                'parent_id' => 'nullable|integer|exists:comments,id'
+            ]);
 
-        $comment = Comment::create([
-            'content' => strip_tags(trim($validated['content'])),
-            'media_type' => strtolower($validated['media_type']),
-            'media_id' => $validated['media_id'],
-            'parent_id' => $validated['parent_id'] ?? null,
-            'user_id' => Auth::id()
-        ]);
+            // Création du commentaire
+            $comment = Comment::create([
+                'user_id' => auth()->id(),
+                'content' => $validated['content'],
+                'commentable_type' => $validated['commentable_type'],
+                'commentable_id' => $validated['commentable_id'],
+                'parent_id' => $validated['parent_id'] ?? null
+            ]);
 
-        return back()->with('success', 'Commentaire ajouté avec succès');
+            // Redirection vers la bonne page
+            if ($validated['commentable_type'] === 'App\Models\Movie') {
+                return redirect()->route('movies.show', $validated['commentable_id'])
+                    ->with('success', 'Votre commentaire a été ajouté avec succès.');
+            } else {
+                return redirect()->route('tv.show', $validated['commentable_id'])
+                    ->with('success', 'Votre commentaire a été ajouté avec succès.');
+            }
+
+        } catch (\Exception $e) {
+            Log::error('Erreur lors de la création du commentaire: ' . $e->getMessage());
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Une erreur est survenue lors de la création du commentaire.');
+        }
     }
 
     public function update(Request $request, Comment $comment): RedirectResponse
@@ -116,30 +109,37 @@ class CommentController extends Controller
         ]);
     }
 
-    public function reply(Request $request, Comment $comment): RedirectResponse
+    public function reply(Request $request, Comment $comment)
     {
-        $validated = $request->validate([
-            'content' => [
-                'required',
-                'string',
-                'min:2',
-                'max:1000',
-                'not_regex:/^[\s]*$/',
-            ]
-        ]);
+        try {
+            // Validation des données
+            $validated = $request->validate([
+                'content' => 'required|string|max:1000'
+            ]);
 
-        if ($comment->parent_id) {
-            return back()->with('error', 'Les réponses imbriquées ne sont pas autorisées.');
+            // Création de la réponse
+            $reply = Comment::create([
+                'user_id' => auth()->id(),
+                'content' => $validated['content'],
+                'commentable_type' => $comment->commentable_type,
+                'commentable_id' => $comment->commentable_id,
+                'parent_id' => $comment->id
+            ]);
+
+            // Redirection vers la bonne page
+            if ($comment->commentable_type === 'App\Models\Movie') {
+                return redirect()->route('movies.show', $comment->commentable_id)
+                    ->with('success', 'Votre réponse a été ajoutée avec succès.');
+            } else {
+                return redirect()->route('tv.show', $comment->commentable_id)
+                    ->with('success', 'Votre réponse a été ajoutée avec succès.');
+            }
+
+        } catch (\Exception $e) {
+            Log::error('Erreur lors de la création de la réponse: ' . $e->getMessage());
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Une erreur est survenue lors de la création de la réponse.');
         }
-
-        $reply = Comment::create([
-            'content' => strip_tags(trim($validated['content'])),
-            'user_id' => Auth::id(),
-            'media_type' => $comment->media_type,
-            'media_id' => $comment->media_id,
-            'parent_id' => $comment->id
-        ]);
-
-        return back()->with('success', 'Réponse ajoutée avec succès');
     }
 }

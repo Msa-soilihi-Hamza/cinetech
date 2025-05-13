@@ -128,6 +128,24 @@ class FavoriteController extends Controller
             return redirect()->back();
         }
     }
+
+    /**
+     * Vérifie si un élément est en favoris
+     */
+    public function check(Request $request)
+    {
+        $request->validate([
+            'tmdb_id' => 'required|integer',
+            'type' => 'required|in:movie,tv'
+        ]);
+
+        $exists = Favorite::where('user_id', auth()->id())
+            ->where('tmdb_id', $request->tmdb_id)
+            ->where('type', $request->type)
+            ->exists();
+
+        return response()->json(['exists' => $exists]);
+    }
 } 
 
 // Ce contrôleur gère tout ce qui concerne les favoris dans l'application avec trois fonctions principales :
@@ -158,4 +176,3 @@ class FavoriteController extends Controller
 //Voir sa collection
 //Retirer des livres qu'on ne veut plus
 //Tout en s'assurant que tout fonctionne correctement !
-

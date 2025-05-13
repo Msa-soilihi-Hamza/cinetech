@@ -83,6 +83,9 @@ class HomeController extends Controller
         try {
             // Récupération des détails du film
             $movieDetails = $this->tmdbService->getMovie($id);
+            
+            // Convertir le tableau en objet PHP
+            $movie = (object) $movieDetails;
 
             // Récupération des vidéos (bandes-annonces)
             $videos = $this->tmdbService->getMovieVideos($id);
@@ -94,85 +97,46 @@ class HomeController extends Controller
                     && in_array($video['iso_639_1'], ['fr', 'en']);
             })->values();
 
-            // Récupération des commentaires
-            $comments = Comment::where('media_type', 'movie')
-                ->where('media_id', $id)
-                ->orderBy('created_at', 'desc')
-                ->get();
-
             return view('movies.show', [
-                'movie' => $movieDetails,
-                'trailers' => $trailers, // Ajout des bandes-annonces
-                'comments' => $comments,
-                'mediaType' => 'movie',
-                'mediaId' => $id
+                'movie' => $movie,
+                'trailers' => $trailers
             ]);
         } catch (\Exception $e) {
             \Log::error('Erreur dans HomeController@showMovie: ' . $e->getMessage());
-            return back()->with('error', 'Une erreur est survenue.');
+            return redirect()->back()->with('error', 'Impossible de charger les détails du film.');
         }
     }
 
     public function showTVShow($id)
     {
         try {
-            // Récupérer les détails de la série avec les crédits
-            $tvResponse = Http::withOptions([
-                'verify' => false
-            ])
-            ->get("https://api.themoviedb.org/3/tv/{$id}", [
-                'api_key' => env('TMDB_API_KEY'),
-                'append_to_response' => 'credits',
-                'language' => 'fr-FR'
-            ]);
+            // Récupération des détails de la série
+            $tvShowDetails = $this->tmdbService->getTVShow($id);
+            
+            // Convertir le tableau en objet PHP
+            $tvShow = (object) $tvShowDetails;
 
-            if (!$tvResponse->successful()) {
-                abort(404);
-            }
+            // Récupération des vidéos
+            $videos = $this->tmdbService->getTVShowVideos($id);
+            
+            // Filtrer pour obtenir uniquement les bandes-annonces YouTube en français ou en anglais
+            $trailers = collect($videos)->filter(function($video) {
+                return $video['site'] === 'YouTube' 
+                    && ($video['type'] === 'Trailer' || $video['type'] === 'Teaser')
+                    && in_array($video['iso_639_1'], ['fr', 'en']);
+            })->values();
 
-            $tvShow = $tvResponse->json();
-            
-            // Récupérer les vidéos en français
-            $frVideosResponse = Http::withOptions([
-                'verify' => false
-            ])
-            ->get("https://api.themoviedb.org/3/tv/{$id}/videos", [
-                'api_key' => env('TMDB_API_KEY'),
-                'language' => 'fr-FR'
-            ]);
-            
-            // Récupérer les vidéos en anglais (au cas où il n'y en aurait pas en français)
-            $enVideosResponse = Http::withOptions([
-                'verify' => false
-            ])
-            ->get("https://api.themoviedb.org/3/tv/{$id}/videos", [
-                'api_key' => env('TMDB_API_KEY'),
-                'language' => 'en-US'
-            ]);
-            
-            // Fusionner les résultats des vidéos
-            $videos = [];
-            if ($frVideosResponse->successful()) {
-                $videos = $frVideosResponse->json()['results'];
-            }
-            
-            if ($enVideosResponse->successful()) {
-                $videos = array_merge($videos, $enVideosResponse->json()['results']);
-            }
-            
-            // Ajouter les vidéos à l'objet tvShow
-            $tvShow['videos'] = ['results' => $videos];
-            
-            $comments = Comment::where('media_type', 'tv')
-                              ->where('media_id', $id)
-                              ->with(['user', 'replies.user'])
-                              ->orderBy('created_at', 'desc')
-                              ->get();
+            // Récupération des crédits (cast et crew)
+            $credits = $this->tmdbService->getTVShowCredits($id);
 
-            return view('tv.show', compact('tvShow', 'comments'));
+            return view('tv.show', [
+                'tvShow' => $tvShow,
+                'trailers' => $trailers,
+                'credits' => $credits
+            ]);
         } catch (\Exception $e) {
             \Log::error('Erreur dans HomeController@showTVShow: ' . $e->getMessage());
-            return back()->with('error', 'Une erreur est survenue lors du chargement de la série.');
+            return redirect()->back()->with('error', 'Impossible de charger les détails de la série.');
         }
     }
 
@@ -289,6 +253,51 @@ class HomeController extends Controller
         } catch (\Exception $e) {
             \Log::error('Erreur lors de la récupération des séries: ' . $e->getMessage());
             return response()->json(['error' => 'Une erreur est survenue'], 500);
+        }
+    }
+
+    public function storeComment(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'content' => 'required|string|max:1000',
+                'commentable_type' => 'required|string',
+                'commentable_id' => 'required|integer',
+                'parent_id' => 'nullable|integer|exists:comments,id'
+            ]);
+
+            // Vérifier si l'utilisateur est authentifié
+            if (!auth()->check()) {
+                return redirect()->back()->with('error', 'Vous devez être connecté pour laisser un commentaire.');
+            }
+
+            // Créer le commentaire
+            $comment = Comment::create([
+                'user_id' => auth()->id(),
+                'content' => $validated['content'],
+                'commentable_type' => $validated['commentable_type'],
+                'commentable_id' => $validated['commentable_id'],
+                'parent_id' => $validated['parent_id'] ?? null
+            ]);
+
+            // Récupérer les détails du film ou de la série
+            $mediaType = $validated['commentable_type'];
+            $mediaId = $validated['commentable_id'];
+
+            // Rediriger vers la bonne page avec un message de succès
+            if ($mediaType === 'App\Models\Movie') {
+                return redirect()->route('movies.show', $mediaId)
+                    ->with('success', 'Votre commentaire a été ajouté avec succès.');
+            } else {
+                return redirect()->route('tv.show', $mediaId)
+                    ->with('success', 'Votre commentaire a été ajouté avec succès.');
+            }
+
+        } catch (\Exception $e) {
+            \Log::error('Erreur lors de la création du commentaire: ' . $e->getMessage());
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Une erreur est survenue lors de la création du commentaire.');
         }
     }
 }

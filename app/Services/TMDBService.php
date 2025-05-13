@@ -15,6 +15,7 @@ class TMDBService
         $this->apiKey = env('TMDB_API_KEY', 'dea1a14482c9d93ec460415f8ad56b1d');
     }
 
+    // Méthodes pour les films
     public function getPopularMovies()
     {
         $response = Http::withoutVerifying()
@@ -73,6 +74,50 @@ class TMDBService
         }
     }
 
+    public function getMovie($id)
+    {
+        try {
+            $response = Http::withOptions([
+                'verify' => false
+            ])->get("{$this->baseUrl}/movie/{$id}", [
+                'api_key' => $this->apiKey,
+                'language' => 'fr-FR',
+                'append_to_response' => 'videos,credits'
+            ]);
+
+            if ($response->successful()) {
+                return $response->json();
+            }
+
+            throw new \Exception('Erreur lors de la récupération des détails du film.');
+        } catch (\Exception $e) {
+            \Log::error('Erreur TMDB: ' . $e->getMessage());
+            throw $e;
+        }
+    }
+
+    public function getMovieVideos($id)
+    {
+        try {
+            $response = Http::withOptions([
+                'verify' => false
+            ])->get("{$this->baseUrl}/movie/{$id}/videos", [
+                'api_key' => $this->apiKey,
+                'language' => 'fr-FR'
+            ]);
+
+            if ($response->successful()) {
+                return $response->json()['results'];
+            }
+
+            return [];
+        } catch (\Exception $e) {
+            \Log::error('Erreur TMDB: ' . $e->getMessage());
+            return [];
+        }
+    }
+
+    // Méthodes pour les séries
     public function getPopularTVShows()
     {
         try {
@@ -106,48 +151,74 @@ class TMDBService
         return $response->json()['results'];
     }
 
-    public function getTVShowDetails($tvId)
-    {
-        $response = Http::withoutVerifying()
-            ->get("{$this->baseUrl}/tv/{$tvId}", [
-                'api_key' => $this->apiKey,
-                'language' => 'fr-FR',
-                'append_to_response' => 'credits,videos'
-            ]);
-
-        return $response->json();
-    }
-
-    public function getMovieVideos($movieId)
-    {
-        $response = Http::withoutVerifying()
-            ->get("{$this->baseUrl}/movie/{$movieId}/videos", [
-                'api_key' => $this->apiKey,
-                'language' => 'fr-FR'
-            ]);
-
-        return $response->json()['results'] ?? [];
-    }
-
-    public function getMovie($movieId)
+    public function getTVShow($id)
     {
         try {
-            $response = Http::withoutVerifying()
-                ->get("{$this->baseUrl}/movie/{$movieId}", [
-                    'api_key' => $this->apiKey,
-                    'language' => 'fr-FR',
-                    'append_to_response' => 'credits,videos'
-                ]);
+            $response = Http::withOptions([
+                'verify' => false
+            ])->get("{$this->baseUrl}/tv/{$id}", [
+                'api_key' => $this->apiKey,
+                'language' => 'fr-FR',
+                'append_to_response' => 'videos,credits'
+            ]);
 
             if ($response->successful()) {
                 return $response->json();
             }
 
-            throw new \Exception('Erreur lors de la récupération des détails du film');
-
+            throw new \Exception('Erreur lors de la récupération des détails de la série.');
         } catch (\Exception $e) {
-            \Log::error('Erreur TMDBService@getMovie: ' . $e->getMessage());
+            \Log::error('Erreur TMDB: ' . $e->getMessage());
             throw $e;
         }
     }
-} 
+
+    public function getTVShowVideos($id)
+    {
+        try {
+            $response = Http::withOptions([
+                'verify' => false
+            ])->get("{$this->baseUrl}/tv/{$id}/videos", [
+                'api_key' => $this->apiKey,
+                'language' => 'fr-FR'
+            ]);
+
+            if ($response->successful()) {
+                return $response->json()['results'];
+            }
+
+            return [];
+        } catch (\Exception $e) {
+            \Log::error('Erreur TMDB: ' . $e->getMessage());
+            return [];
+        }
+    }
+
+    /**
+     * Récupère les crédits (cast et crew) d'une série
+     *
+     * @param int $id ID de la série
+     * @return array Les crédits de la série
+     */
+    public function getTVShowCredits(int $id): array
+    {
+        try {
+            $response = Http::withOptions([
+                'verify' => false
+            ])->get("{$this->baseUrl}/tv/{$id}/credits", [
+                'api_key' => $this->apiKey,
+                'language' => 'fr-FR'
+            ]);
+
+            if ($response->successful()) {
+                return $response->json();
+            }
+
+            return [];
+
+        } catch (\Exception $e) {
+            \Log::error('Erreur TMDB: ' . $e->getMessage());
+            return [];
+        }
+    }
+}
