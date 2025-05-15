@@ -143,24 +143,34 @@
             </div>
         </div>
 
-        {{-- Section favoris --}}
-        {{-- <div class="mt-8 bg-gray-800 rounded-lg shadow-lg p-6">
-            <div class="container mx-auto">
-                <h2 class="text-2xl font-bold text-white mb-6">Ajouter aux favoris</h2>
-
-                @auth
-                    <form action="{{ route('favorites.store') }}" method="POST" class="mb-8">
-                        @csrf
-                        <input type="hidden" name="media_type" value="tv">
-                        <input type="hidden" name="media_id" value="{{ $tvShow->id }}">
-                        <button type="submit" 
-                                class="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
-                            Ajouter aux favoris
-                        </button>
-                    </form>
-                @endauth
+        {{-- Équipe technique --}}
+        <div class="mt-12">
+            <h2 class="text-2xl font-bold text-white mb-6">Équipe technique</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                @if(isset($credits['crew']))
+                    @foreach(array_slice($credits['crew'], 0, 8) as $crewMember)
+                        <div class="bg-gray-800 rounded-lg p-4">
+                            <h3 class="font-semibold text-white mb-2">{{ $crewMember['name'] }}</h3>
+                            <p class="text-gray-400 mb-2">{{ $crewMember['job'] ?? 'Non spécifié' }}</p>
+                            @if(isset($crewMember['profile_path']))
+                                <img src="https://image.tmdb.org/t/p/w185{{ $crewMember['profile_path'] }}"
+                                     alt="{{ $crewMember['name'] }}"
+                                     class="w-24 h-24 rounded-full object-cover mt-2">
+                            @else
+                                <div class="w-24 h-24 rounded-full bg-gray-700 flex items-center justify-center mt-2">
+                                    <span class="text-gray-400">Aucune image</span>
+                                </div>
+                            @endif
+                        </div>
+                    @endforeach
+                @else
+                    <p class="text-gray-400">Aucune information sur l'équipe technique disponible.</p>
+                @endif
             </div>
-        </div> --}}
+        </div>
+        
+        {{-- Section des commentaires --}}
+        <x-comments :mediaType="$mediaType" :mediaId="$mediaId" :comments="$comments" />
     </div>
 </div>
 

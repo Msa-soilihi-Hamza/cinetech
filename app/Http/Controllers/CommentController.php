@@ -26,12 +26,20 @@ class CommentController extends Controller
                 'parent_id' => 'nullable|integer|exists:comments,id'
             ]);
 
+            // Déterminer le media_type
+            $mediaType = 'movie';
+            if ($validated['commentable_type'] === 'App\Models\TvShow') {
+                $mediaType = 'tv';
+            }
+
             // Création du commentaire
             $comment = Comment::create([
                 'user_id' => auth()->id(),
                 'content' => $validated['content'],
                 'commentable_type' => $validated['commentable_type'],
                 'commentable_id' => $validated['commentable_id'],
+                'media_type' => $mediaType,
+                'media_id' => $validated['commentable_id'],
                 'parent_id' => $validated['parent_id'] ?? null
             ]);
 
@@ -54,38 +62,61 @@ class CommentController extends Controller
 
     public function update(Request $request, Comment $comment): RedirectResponse
     {
-        $this->authorize('update', $comment);
+        try {
+            // Vérifier l'autorisation
+            $this->authorize('update', $comment);
 
-        $validated = $request->validate([
-            'content' => [
-                'required',
-                'string',
-                'min:2',
-                'max:1000',
-                'not_regex:/^[\s]*$/',
-            ]
-        ]);
+            $validated = $request->validate([
+                'content' => [
+                    'required',
+                    'string',
+                    'min:2',
+                    'max:1000',
+                    'not_regex:/^[\s]*$/',
+                ]
+            ]);
 
-        $comment->update([
-            'content' => strip_tags(trim($validated['content']))
-        ]);
+            $comment->update([
+                'content' => strip_tags(trim($validated['content']))
+            ]);
 
-        return back()->with('success', 'Commentaire modifié avec succès');
+            return back()->with('success', 'Commentaire modifié avec succès');
+        } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
+            Log::error('Erreur d\'autorisation lors de la modification du commentaire: ' . $e->getMessage());
+            return back()->with('error', 'Vous n\'êtes pas autorisé à modifier ce commentaire.');
+        } catch (\Exception $e) {
+            Log::error('Erreur lors de la modification du commentaire: ' . $e->getMessage());
+            return back()->with('error', 'Une erreur est survenue lors de la modification du commentaire.');
+        }
     }
 
     public function destroy(Comment $comment): RedirectResponse
     {
-        $this->authorize('delete', $comment);
+        try {
+            // Vérifier l'autorisation
+            $this->authorize('delete', $comment);
 
-        $comment->delete();
+            $comment->delete();
 
-        return back()->with('success', 'Commentaire supprimé avec succès');
+            return back()->with('success', 'Commentaire supprimé avec succès');
+        } catch (\Illuminate\Auth\Access\AuthorizationException $e) {
+            Log::error('Erreur d\'autorisation lors de la suppression du commentaire: ' . $e->getMessage());
+            return back()->with('error', 'Vous n\'êtes pas autorisé à supprimer ce commentaire.');
+        } catch (\Exception $e) {
+            Log::error('Erreur lors de la suppression du commentaire: ' . $e->getMessage());
+            return back()->with('error', 'Une erreur est survenue lors de la suppression du commentaire.');
+        }
     }
 
     public function index(Request $request)
     {
-        $comments = Comment::where('media_type', $request->media_type)
-            ->where('media_id', $request->media_id)
+        $mediaType = $request->media_type;
+        $mediaId = $request->media_id;
+        
+        $commentableType = $mediaType === 'movie' ? 'App\Models\Movie' : 'App\Models\TvShow';
+        
+        $comments = Comment::where('commentable_type', $commentableType)
+            ->where('commentable_id', $mediaId)
             ->whereNull('parent_id')
             ->with(['user', 'replies.user'])
             ->orderBy('created_at', 'desc')
@@ -93,8 +124,8 @@ class CommentController extends Controller
 
         return view('comments.index', [
             'comments' => $comments,
-            'media_type' => $request->media_type,
-            'media_id' => $request->media_id
+            'mediaType' => $mediaType,
+            'mediaId' => $mediaId
         ]);
     }
 
@@ -104,25 +135,39 @@ class CommentController extends Controller
 
         return view('comments.show', [
             'comment' => $comment,
-            'media_type' => $comment->media_type,
-            'media_id' => $comment->media_id
+            'mediaType' => $comment->commentable_type === 'App\Models\Movie' ? 'movie' : 'tv',
+            'mediaId' => $comment->commentable_id
         ]);
     }
 
     public function reply(Request $request, Comment $comment)
     {
         try {
+            // Vérifier si l'utilisateur est authentifié
+            if (!auth()->check()) {
+                return redirect()->route('login')
+                    ->with('error', 'Vous devez être connecté pour répondre à un commentaire.');
+            }
+
             // Validation des données
             $validated = $request->validate([
                 'content' => 'required|string|max:1000'
             ]);
 
+            // Déterminer le media_type
+            $mediaType = 'movie';
+            if ($comment->commentable_type === 'App\Models\TvShow') {
+                $mediaType = 'tv';
+            }
+
             // Création de la réponse
             $reply = Comment::create([
                 'user_id' => auth()->id(),
-                'content' => $validated['content'],
+                'content' => strip_tags(trim($validated['content'])),
                 'commentable_type' => $comment->commentable_type,
                 'commentable_id' => $comment->commentable_id,
+                'media_type' => $mediaType,
+                'media_id' => $comment->commentable_id,
                 'parent_id' => $comment->id
             ]);
 
@@ -139,7 +184,7 @@ class CommentController extends Controller
             Log::error('Erreur lors de la création de la réponse: ' . $e->getMessage());
             return redirect()->back()
                 ->withInput()
-                ->with('error', 'Une erreur est survenue lors de la création de la réponse.');
+                ->with('error', 'Une erreur est survenue lors de la création de la réponse: ' . $e->getMessage());
         }
     }
 }

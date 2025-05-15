@@ -12,6 +12,8 @@ class Comment extends Model
     protected $fillable = [
         'user_id',
         'content',
+        'commentable_type',
+        'commentable_id',
         'media_type',
         'media_id',
         'parent_id'
@@ -31,7 +33,7 @@ class Comment extends Model
 
     public function getCommentableType()
     {
-        return $this->media_type === 'movie' ? 'App\Models\Movie' : 'App\Models\TVShow';
+        return $this->commentable_type ?? ($this->media_type === 'movie' ? 'App\Models\Movie' : 'App\Models\TVShow');
     }
 
     // Relation polymorphique avec le contenu commenté

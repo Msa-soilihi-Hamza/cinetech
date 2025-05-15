@@ -53,6 +53,12 @@ class CommentPolicy
      */
     public function update(User $user, Comment $comment): bool
     {
+        // L'administrateur peut modifier n'importe quel commentaire
+        if ($user->isAdmin()) {
+            return true;
+        }
+        
+        // Les utilisateurs normaux ne peuvent modifier que leurs propres commentaires
         return $user->id === $comment->user_id;
     }
 
@@ -65,6 +71,12 @@ class CommentPolicy
      */
     public function delete(User $user, Comment $comment): bool
     {
+        // L'administrateur peut supprimer n'importe quel commentaire
+        if ($user->isAdmin()) {
+            return true;
+        }
+        
+        // Les utilisateurs normaux ne peuvent supprimer que leurs propres commentaires
         return $user->id === $comment->user_id;
     }
 

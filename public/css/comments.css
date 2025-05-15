@@ -1,0 +1,98 @@
+/**
+ * Styles pour les commentaires
+ */
+
+/* Boutons d'action */
+[data-edit-comment],
+[data-reply-toggle],
+.comment-edit-form button {
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+/* Formulaires d'édition */
+.comment-edit-form {
+    background-color: rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    border-radius: 8px;
+    margin-top: 10px;
+}
+
+.comment-edit-form.hidden {
+    display: none;
+}
+
+.comment-content.hidden {
+    display: none;
+}
+
+/* Formulaires de réponse */
+.reply-form {
+    background-color: rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    border-radius: 8px;
+    margin-top: 10px;
+}
+
+.reply-form.hidden {
+    display: none;
+}
+
+/* Mise en évidence des actions */
+.comment-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+/* Animation pour les transitions */
+.comment-content,
+.comment-edit-form,
+.reply-form {
+    transition: opacity 0.3s ease;
+}
+
+/* Styles pour les boutons */
+.btn-edit,
+.btn-delete,
+.btn-reply {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+.btn-edit i,
+.btn-delete i,
+.btn-reply i {
+    margin-right: 5px;
+}
+
+/* Effet de survol */
+.btn-edit:hover,
+.btn-delete:hover,
+.btn-reply:hover {
+    transform: translateY(-2px);
+}
+
+/* Styles spécifiques pour les réponses */
+.replies {
+    margin-left: 20px;
+    padding-left: 10px;
+    border-left: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Styles pour les messages d'erreur */
+.comment-error {
+    color: #f56565;
+    margin-top: 5px;
+    font-size: 0.875rem;
+}
+
+/* Styles pour les messages de succès */
+.comment-success {
+    color: #48bb78;
+    margin-top: 5px;
+    font-size: 0.875rem;
+} 

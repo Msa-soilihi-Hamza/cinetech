@@ -162,6 +162,9 @@
                         @endif
                     </div>
                 </div>
+                
+                {{-- Section des commentaires --}}
+                <x-comments :mediaType="$mediaType" :mediaId="$mediaId" :comments="$comments" />
             </div>
         </div>
     </div>

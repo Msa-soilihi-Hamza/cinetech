@@ -97,9 +97,20 @@ class HomeController extends Controller
                     && in_array($video['iso_639_1'], ['fr', 'en']);
             })->values();
 
+            // Récupérer les commentaires pour ce film
+            $comments = Comment::where('commentable_type', 'App\Models\Movie')
+                ->where('commentable_id', $id)
+                ->whereNull('parent_id')
+                ->with(['user', 'replies.user'])
+                ->orderBy('created_at', 'desc')
+                ->get();
+
             return view('movies.show', [
                 'movie' => $movie,
-                'trailers' => $trailers
+                'trailers' => $trailers,
+                'comments' => $comments,
+                'mediaType' => 'movie',
+                'mediaId' => $id
             ]);
         } catch (\Exception $e) {
             \Log::error('Erreur dans HomeController@showMovie: ' . $e->getMessage());
@@ -129,10 +140,21 @@ class HomeController extends Controller
             // Récupération des crédits (cast et crew)
             $credits = $this->tmdbService->getTVShowCredits($id);
 
+            // Récupérer les commentaires pour cette série
+            $comments = Comment::where('commentable_type', 'App\Models\TvShow')
+                ->where('commentable_id', $id)
+                ->whereNull('parent_id')
+                ->with(['user', 'replies.user'])
+                ->orderBy('created_at', 'desc')
+                ->get();
+
             return view('tv.show', [
                 'tvShow' => $tvShow,
                 'trailers' => $trailers,
-                'credits' => $credits
+                'credits' => $credits,
+                'comments' => $comments,
+                'mediaType' => 'tv',
+                'mediaId' => $id
             ]);
         } catch (\Exception $e) {
             \Log::error('Erreur dans HomeController@showTVShow: ' . $e->getMessage());

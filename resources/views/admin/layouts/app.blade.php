@@ -97,10 +97,115 @@
             color: #c0392b !important;
         }
 
+        /* Responsive menu */
+        @media (max-width: 991.98px) {
+            .nav-menu {
+                display: none;
+            }
+
+            .mobile-nav {
+                display: flex;
+                align-items: center;
+                gap: 2rem;
+            }
+
+            .mobile-menu-btn {
+                display: flex;
+                align-items: center;
+                color: var(--text-light);
+                background: none;
+                border: none;
+                font-size: 1.5rem;
+                cursor: pointer;
+                padding: 0.5rem;
+            }
+
+            .mobile-menu {
+                display: none;
+                position: fixed;
+                top: 60px;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: linear-gradient(135deg, var(--primary-color), #34495e);
+                padding: 1rem;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                z-index: 1001;
+                overflow-y: auto;
+            }
+
+            .mobile-menu.active {
+                display: block;
+            }
+
+            .mobile-menu-header {
+                display: flex;
+                justify-content: flex-end;
+                margin-bottom: 1rem;
+            }
+
+            .mobile-menu-close {
+                background: none;
+                border: none;
+                color: var(--text-light);
+                font-size: 1.5rem;
+                cursor: pointer;
+                padding: 0.5rem;
+            }
+
+            .mobile-menu .nav-menu {
+                display: block;
+                padding: 0;
+                margin: 0;
+            }
+
+            .mobile-menu .nav-item {
+                width: 100%;
+                margin-bottom: 0.5rem;
+            }
+
+            .mobile-menu .nav-link {
+                width: 100%;
+                text-align: left;
+                padding: 0.75rem 1rem;
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+
+            .mobile-menu .nav-link i {
+                font-size: 1.2rem;
+            }
+
+            .mobile-menu .nav-link span {
+                flex: 1;
+            }
+
+            .mobile-menu .nav-link:hover {
+                color: var(--text-light);
+                background: rgba(255, 255, 255, 0.1);
+            }
+
+            .mobile-menu .nav-link.active {
+                color: var(--secondary-color);
+                background: rgba(255, 255, 255, 0.15);
+                box-shadow: inset 4px 0 0 var(--secondary-color);
+            }
+
+            .mobile-menu .logout-btn {
+                color: var(--accent-color) !important;
+            }
+
+            .mobile-menu .logout-btn:hover {
+                color: #c0392b !important;
+            }
+        }
+
         main {
             background-color: var(--text-light);
             padding: 80px 2rem 2rem;
-            margin-top: 0;
+            margin-top: 60px;
         }
 
         @media (max-width: 992px) {
@@ -178,64 +283,122 @@
         <div class="container-fluid">
             <div class="d-flex justify-content-between align-items-center">
                 <div class="navbar-brand">
-                    <i class="ri-movie-2-line me-2"></i>
-                    <span>CINETECH</span>
-                    <small class="d-block">Administration</small>
+                    <i class="ri-film-line"></i>
+                    <span>Cinetech</span>
+                    <small>Administration</small>
                 </div>
-                
-                <ul class="nav-menu">
-                    <li class="nav-item">
-                        <a class="nav-link {{ Request::is('admin/users*') ? 'active' : '' }}" href="{{ route('admin.users.index') }}">
-                            <i class="ri-user-3-line"></i>Utilisateurs
+
+                <div class="mobile-nav">
+                    <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Menu">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+
+                <div class="d-none d-md-block">
+                    <div class="d-flex gap-2">
+                        <a href="{{ route('home') }}" class="nav-link">
+                            <i class="fas fa-home"></i>
+                            <span>Site public</span>
                         </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ Request::is('admin/comments*') ? 'active' : '' }}" href="{{ route('admin.comments.index') }}">
-                            <i class="ri-chat-3-line"></i>Commentaires
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('home') }}">
-                            <i class="ri-home-4-line"></i>Site public
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <form method="POST" action="{{ route('logout') }}">
+                        <form action="{{ route('logout') }}" method="POST" class="d-inline">
                             @csrf
-                            <button type="submit" class="nav-link border-0 bg-transparent logout-btn">
-                                <i class="ri-logout-box-line"></i>Déconnexion
+                            <button type="submit" class="nav-link logout-btn">
+                                <i class="fas fa-sign-out-alt"></i>
+                                <span>Déconnexion</span>
                             </button>
                         </form>
-                    </li>
-                </ul>
+                    </div>
+                </div>
             </div>
         </div>
     </nav>
 
-    <main>
-        <div class="header">
-            <h1 class="h2">@yield('header', 'Administration Cinetech')</h1>
+    <!-- Menu mobile -->
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="mobile-menu-header">
+            <button class="mobile-menu-close" id="mobileMenuClose">
+                <i class="fas fa-times"></i>
+            </button>
         </div>
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->is('admin/dashboard') ? 'active' : '' }}">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Tableau de bord</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{{ route('admin.users.index') }}" class="nav-link {{ request()->is('admin/users*') ? 'active' : '' }}">
+                    <i class="fas fa-users"></i>
+                    <span>Utilisateurs</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{{ route('admin.comments.index') }}" class="nav-link {{ request()->is('admin/comments*') ? 'active' : '' }}">
+                    <i class="fas fa-comments"></i>
+                    <span>Commentaires</span>
+                </a>
+            </li>
+            <li class="nav-item d-md-none">
+                <a href="{{ route('home') }}" class="nav-link">
+                    <i class="fas fa-home"></i>
+                    <span>Site public</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <form action="{{ route('logout') }}" method="POST" class="d-inline">
+                    @csrf
+                    <button type="submit" class="nav-link logout-btn">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Déconnexion</span>
+                    </button>
+                </form>
+            </li>
+        </ul>
+    </div>
 
-        @if(session('success'))
-            <div class="alert alert-success">
-                {{ session('success') }}
+    <main class="container-fluid mt-5">
+        <div class="row">
+            <div class="col-12">
+                <h2 class="mb-4">@yield('header')</h2>
             </div>
-        @endif
-
-        @if(session('error'))
-            <div class="alert alert-danger">
-                {{ session('error') }}
-            </div>
-        @endif
-
-        <div class="content">
-            @yield('content')
         </div>
+        @yield('content')
     </main>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const mobileMenu = document.getElementById('mobileMenu');
+            const mobileMenuClose = document.getElementById('mobileMenuClose');
+
+            // Ouvrir le menu
+            mobileMenuBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                mobileMenu.classList.add('active');
+            });
+
+            // Fermer avec le bouton ×
+            mobileMenuClose.addEventListener('click', function() {
+                mobileMenu.classList.remove('active');
+            });
+
+            // Fermer en cliquant en dehors
+            document.addEventListener('click', function(e) {
+                if (!mobileMenu.contains(e.target) && !mobileMenuBtn.contains(e.target)) {
+                    mobileMenu.classList.remove('active');
+                }
+            });
+
+            // Empêcher la propagation du clic sur les liens du menu
+            mobileMenu.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+        });
+    </script>
     @yield('scripts')
 </body>
 </html>
