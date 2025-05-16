@@ -295,19 +295,41 @@
                 </div>
 
                 <div class="d-none d-md-block">
-                    <div class="d-flex gap-2">
-                        <a href="{{ route('home') }}" class="nav-link">
-                            <i class="fas fa-home"></i>
-                            <span>Site public</span>
-                        </a>
-                        <form action="{{ route('logout') }}" method="POST" class="d-inline">
-                            @csrf
-                            <button type="submit" class="nav-link logout-btn">
-                                <i class="fas fa-sign-out-alt"></i>
-                                <span>Déconnexion</span>
-                            </button>
-                        </form>
-                    </div>
+                    <ul class="nav-menu">
+                        <li class="nav-item">
+                            <a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->is('admin/dashboard') ? 'active' : '' }}">
+                                <i class="fas fa-chart-line"></i>
+                                <span>Tableau de bord</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.users.index') }}" class="nav-link {{ request()->is('admin/users*') ? 'active' : '' }}">
+                                <i class="fas fa-users"></i>
+                                <span>Utilisateurs</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.comments.index') }}" class="nav-link {{ request()->is('admin/comments*') ? 'active' : '' }}">
+                                <i class="fas fa-comments"></i>
+                                <span>Commentaires</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('home') }}" class="nav-link">
+                                <i class="fas fa-home"></i>
+                                <span>Site public</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <form action="{{ route('logout') }}" method="POST" class="d-inline">
+                                @csrf
+                                <button type="submit" class="nav-link logout-btn">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                    <span>Déconnexion</span>
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>
@@ -363,6 +385,21 @@
                 <h2 class="mb-4">@yield('header')</h2>
             </div>
         </div>
+        
+        @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
+        </div>
+        @endif
+
+        @if(session('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{ session('error') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
+        </div>
+        @endif
+        
         @yield('content')
     </main>
 

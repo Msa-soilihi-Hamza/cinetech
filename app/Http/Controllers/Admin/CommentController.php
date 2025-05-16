@@ -68,10 +68,26 @@ class CommentController extends Controller
         try {
             $comment->delete();
             DB::commit();
-            return response()->json(['success' => true]);
+            
+            // Si c'est une requête AJAX, retourner une réponse JSON
+            if (request()->ajax()) {
+                return response()->json(['success' => true]);
+            }
+            
+            // Sinon, rediriger avec un message de succès
+            return redirect()->route('admin.comments.index')
+                ->with('success', 'Le commentaire a été supprimé avec succès.');
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json(['success' => false, 'error' => $e->getMessage()], 500);
+            
+            // Si c'est une requête AJAX, retourner une réponse JSON avec erreur
+            if (request()->ajax()) {
+                return response()->json(['success' => false, 'error' => $e->getMessage()], 500);
+            }
+            
+            // Sinon, rediriger avec un message d'erreur
+            return redirect()->route('admin.comments.index')
+                ->with('error', 'Une erreur est survenue lors de la suppression du commentaire: ' . $e->getMessage());
         }
     }
 }
